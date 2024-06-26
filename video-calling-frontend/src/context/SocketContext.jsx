@@ -8,10 +8,11 @@ import React, {
 import SocketIoClient from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 import Peer from "peerjs";
-import { v4 as UUIDv4 } from "uuid";
 import {
   addPeerAction,
   removePeerAction,
+  videoToggleAction,
+  audioToggleAction,
   peerReducer,
   initialState,
 } from "../reducers/PeerReducer";
@@ -31,75 +32,105 @@ const socket = SocketIoClient(WS_Server, {
 export const SocketProvider = ({ children }) => {
   const navigate = useNavigate();
   const [peerItems, peerDispatch] = useReducer(peerReducer, initialState);
-  const [user, setUser] = useState(null);
-  const [stream, setStream] = useState(null);
 
-  // Fetch user media stream
-  const fetchUserFeed = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: false,
-      });
-      setStream(stream);
-    } catch (error) {
-      console.error("Error fetching user media:", error);
-    }
-  };
+  const [user, setUser] = useState();
+  const [stream, setStream] = useState();
 
-  // Handle fetching participant list
   const fetchParticipantList = ({ roomId, participants }) => {
-    console.log("Fetched room participants:", roomId, participants);
+    console.log("Fetched room participants");
+    console.log(roomId, participants);
   };
 
-  // Handle entering a room
-  const enterRoom = ({ roomId }) => {
-    navigate(`/chatroom/${roomId}`);
+  const fetchUserFeed = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    });
+    setStream(stream);
   };
 
   useEffect(() => {
-    const newPeer = new Peer("667ad717c58ae5fbe2ab30ba", {
-      // host: "localhost",
-      // port: 9000,
-      // path: "/myapp",
+    const userId = localStorage.getItem("username");
+    const newPeer = new Peer(userId, {
+      host: "192.168.0.111",
+      port: 9000,
+      path: "/myapp",
     });
+
     setUser(newPeer);
 
     fetchUserFeed();
 
-    // Socket event listeners
+    const enterRoom = ({ roomId }) => {
+      navigate(`chatroom/${roomId}`);
+    };
+
+    // we will transfer the user to the room page when we collect an event of room-created from server
     socket.on("room-created", enterRoom);
-    socket.on("joined-room", fetchParticipantList);
+
+    socket.on("get-users", fetchParticipantList);
   }, []);
 
   useEffect(() => {
     if (!user || !stream) return;
 
-    // Handle user joining
     socket.on("user-joined", ({ peerId }) => {
-      const call = user.call(peerId, stream);
-      console.log("Calling the new peer", peerId);
-      call.on("stream", (remoteStream) => {
-        peerDispatch(addPeerAction(peerId, remoteStream));
-      });
+      navigator.mediaDevices
+        .getUserMedia({
+          video: true,
+          audio: true,
+        })
+        .then((userstream) => {
+          var call = user.call(peerId, userstream);
+          console.log("Call and new peer", call, peerId);
+          call.on("stream", (peerStream) => {
+            peerDispatch(addPeerAction(peerId, peerStream));
+          });
+        });
     });
 
-    // Handle receiving a call
     user.on("call", (call) => {
-      console.log("Receiving a call");
-      call.answer(stream);
-      call.on("stream", (remoteStream) => {
-        console.log("call peer", call.peer);
-        peerDispatch(addPeerAction(call.peer, remoteStream));
-      });
+      console.log("New call", call);
+      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(
+        (userstream) => {
+          call.answer(userstream);
+          call.on("stream", function (remoteStream) {
+            peerDispatch(addPeerAction(call.peer, remoteStream));
+          });
+        },
+        function (err) {
+          console.log("Failed to get local stream", err);
+        }
+      );
+    });
+
+    socket.on("user-disconnected", ({ peerId }) => {
+      console.log("User disconnected", peerId);
+      peerDispatch(removePeerAction(peerId));
+    });
+
+    socket.on("video-mute", ({ peerId, video }) => {
+      peerDispatch(videoToggleAction(peerId, video));
+    });
+
+    socket.on("audio-mute", ({ peerId, audio }) => {
+      peerDispatch(audioToggleAction(peerId, audio));
     });
 
     socket.emit("ready");
-  }, [user, stream]);
+  }, [stream, user]);
 
   return (
     <SocketContext.Provider
-      value={{ socket, user, stream, peerItems, peerDispatch }}
+      value={{
+        socket,
+        user,
+        setUser,
+        stream,
+        setStream,
+        peerItems,
+        peerDispatch,
+      }}
     >
       {children}
     </SocketContext.Provider>

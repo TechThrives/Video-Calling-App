@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
 import VideoParticipant from "../components/VideoParticipant";
 
 const ChatRoom = () => {
+  const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isRightSideVisible, setIsRightSideVisible] = useState(false);
+  const [buttonState, setButtonState] = useState({
+    mic: true,
+    video: true,
+    fullscreen: false,
+  });
 
   const { roomId } = useParams();
-  const { socket, user, stream, peerItems } = useSocket();
+  const { socket, user, setUser, stream, setStream, peerItems } = useSocket();
 
   useEffect(() => {
-    // emitting this event so that either creator of room or joinee in the room
-    // anyone is added the server knows that new people have been added\
-    // to this room
     if (user) {
       console.log("New user ", user._id, "has joined room", roomId);
       socket.emit("joined-room", { roomId: roomId, peerId: user._id });
@@ -59,6 +62,7 @@ const ChatRoom = () => {
         // IE/Edge
         document.documentElement.msRequestFullscreen();
       }
+      setButtonState((prev) => ({ ...prev, fullscreen: true }));
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen();
@@ -72,20 +76,57 @@ const ChatRoom = () => {
         // IE/Edge
         document.msExitFullscreen();
       }
+      setButtonState((prev) => ({ ...prev, fullscreen: false }));
     }
+  };
+
+  const handleLeave = () => {
+    socket.emit("leave-room", { roomId: roomId, peerId: user._id });
+    user.destroy();
+    navigate("/");
+  };
+
+  const handleMic = () => {
+    if (!stream) return;
+    let audioTrack = stream.getAudioTracks()[0];
+    audioTrack.enabled = !audioTrack.enabled;
+    socket.emit("audio-mute", {
+      roomId: roomId,
+      peerId: user._id,
+      audio: audioTrack.enabled,
+    });
+    setButtonState((prev) => ({
+      ...prev,
+      mic: audioTrack.enabled,
+    }));
+  };
+
+  const handleVideo = () => {
+    if (!stream) return;
+    let videoTrack = stream.getVideoTracks()[0];
+    videoTrack.enabled = !videoTrack.enabled;
+    socket.emit("video-mute", {
+      roomId: roomId,
+      peerId: user._id,
+      video: videoTrack.enabled,
+    });
+    setButtonState((prev) => ({
+      ...prev,
+      video: videoTrack.enabled,
+    }));
   };
 
   return (
     <>
-      <div class="app-container">
-        <button class="mode-switch" onClick={toggleDarkMode}>
+      <div className="app-container">
+        <button className="mode-switch" onClick={toggleDarkMode}>
           <svg
-            class="sun feather feather-sun"
+            className="sun feather feather-sun"
             fill="none"
             stroke="#fbb046"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
             viewBox="0 0 24 24"
           >
             <defs />
@@ -94,29 +135,29 @@ const ChatRoom = () => {
           </svg>
 
           <svg
-            class="moon feather feather-moon"
+            className="moon feather feather-moon"
             fill="none"
             stroke="#ffffff"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
             viewBox="0 0 24 24"
           >
             <defs />
             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
           </svg>
         </button>
-        <div class={`left-side`}>
-          <div class="navigation">
-            <a href="#" class="nav-link icon">
+        <div className={`left-side`}>
+          <div className="navigation">
+            <a href="#" className="nav-link icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-home"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="feather feather-home"
                 viewBox="0 0 24 24"
               >
                 <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
@@ -124,7 +165,7 @@ const ChatRoom = () => {
               </svg>
             </a>
 
-            <a href="#" class="nav-link icon">
+            <a href="#" className="nav-link icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -132,29 +173,29 @@ const ChatRoom = () => {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-message-square"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="feather feather-message-square"
               >
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </a>
-            <a href="#" class="nav-link icon">
+            <a href="#" className="nav-link icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-phone-call"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="feather feather-phone-call"
                 viewBox="0 0 24 24"
               >
                 <path d="M15.05 5A5 5 0 0119 8.95M15.05 1A9 9 0 0123 8.94m-1 7.98v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
               </svg>
             </a>
-            <a href="#" class="nav-link icon">
+            <a href="#" className="nav-link icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -162,10 +203,10 @@ const ChatRoom = () => {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-hard-drive"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="feather feather-hard-drive"
               >
                 <line x1="22" y1="12" x2="2" y2="12" />
                 <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
@@ -173,7 +214,7 @@ const ChatRoom = () => {
                 <line x1="10" y1="16" x2="10.01" y2="16" />
               </svg>
             </a>
-            <a href="#" class="nav-link icon">
+            <a href="#" className="nav-link icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -181,10 +222,10 @@ const ChatRoom = () => {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-users"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="feather feather-users"
               >
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
@@ -192,29 +233,29 @@ const ChatRoom = () => {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </a>
-            <a href="#" class="nav-link icon">
+            <a href="#" className="nav-link icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-folder"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="feather feather-folder"
                 viewBox="0 0 24 24"
               >
                 <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
               </svg>
             </a>
-            <a href="#" class="nav-link icon">
+            <a href="#" className="nav-link icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-settings"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="feather feather-settings"
                 viewBox="0 0 24 24"
               >
                 <circle cx="12" cy="12" r="3" />
@@ -223,37 +264,55 @@ const ChatRoom = () => {
             </a>
           </div>
         </div>
-        <div class="app-main">
+        <div className="app-main">
           <VideoParticipant stream={stream} />
-          <div class="video-call-wrapper">
+          <div className="video-call-wrapper">
             {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} stream={stream} />
+              <VideoParticipant
+                key={peerId}
+                stream={peerItems[peerId].stream}
+              />
             ))}
           </div>
 
-          <div class="video-call-actions">
-            <button class="video-action-button mic"></button>
-            <button class="video-action-button camera"></button>
+          <div className="video-call-actions">
             <button
-              class="video-action-button maximize"
+              className={`video-action-button mic ${
+                buttonState.mic ? "on" : ""
+              }`}
+              onClick={handleMic}
+            ></button>
+            <button
+              className={`video-action-button camera ${
+                buttonState.video ? "on" : ""
+              }`}
+              onClick={handleVideo}
+            ></button>
+            <button
+              className={`video-action-button maximize ${
+                buttonState.fullscreen ? "minimize" : "maximize"
+              }`}
               onClick={handleFullscreen}
             ></button>
-            <button class="video-action-button endcall">Leave</button>
+            <button
+              className="video-action-button endcall"
+              onClick={handleLeave}
+            ></button>
           </div>
         </div>
 
-        <div class={`right-side ${isRightSideVisible ? "show" : ""}`}>
-          <button class="btn-close-right" onClick={closeRightSide}>
+        <div className={`right-side ${isRightSideVisible ? "show" : ""}`}>
+          <button className="btn-close-right" onClick={closeRightSide}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
               fill="none"
               stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              class="feather feather-x-circle"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="feather feather-x-circle"
               viewBox="0 0 24 24"
             >
               <defs></defs>
@@ -261,75 +320,75 @@ const ChatRoom = () => {
               <path d="M15 9l-6 6M9 9l6 6"></path>
             </svg>
           </button>
-          <div class="chat-container">
-            <div class="chat-area">
-              <div class="message-wrapper">
-                <div class="profile-picture">
+          <div className="chat-container">
+            <div className="chat-area">
+              <div className="message-wrapper">
+                <div className="profile-picture">
                   <img
                     src="https://images.unsplash.com/photo-1581824283135-0666cf353f35?ixlib=rb-1.2.1&auto=format&fit=crop&w=1276&q=80"
                     alt=""
                   />
                 </div>
-                <div class="message-content">
-                  <p class="name">Ryan Patrick</p>
-                  <div class="message">Helloo team!😍</div>
+                <div className="message-content">
+                  <p className="name">Ryan Patrick</p>
+                  <div className="message">Helloo team!😍</div>
                 </div>
               </div>
 
-              <div class="message-wrapper">
-                <div class="profile-picture">
+              <div className="message-wrapper">
+                <div className="profile-picture">
                   <img
                     src="https://images.unsplash.com/photo-1566821582776-92b13ab46bb4?ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60"
                     alt=""
                   />
                 </div>
-                <div class="message-content">
-                  <p class="name">Andy Will</p>
-                  <div class="message">
+                <div className="message-content">
+                  <p className="name">Andy Will</p>
+                  <div className="message">
                     Hello! Can you hear me?🤯{" "}
-                    <a class="mention">@ryanpatrick</a>
+                    <a className="mention">@ryanpatrick</a>
                   </div>
                 </div>
               </div>
 
-              <div class="message-wrapper">
-                <div class="profile-picture">
+              <div className="message-wrapper">
+                <div className="profile-picture">
                   <img
                     src="https://images.unsplash.com/photo-1600207438283-a5de6d9df13e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1234&q=80"
                     alt=""
                   />
                 </div>
-                <div class="message-content">
-                  <p class="name">Jessica Bell</p>
-                  <div class="message">Hi team! Let's get started it.</div>
+                <div className="message-content">
+                  <p className="name">Jessica Bell</p>
+                  <div className="message">Hi team! Let's get started it.</div>
                 </div>
               </div>
 
-              <div class="message-wrapper reverse">
-                <div class="profile-picture">
+              <div className="message-wrapper reverse">
+                <div className="profile-picture">
                   <img
                     src="https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80"
                     alt=""
                   />
                 </div>
-                <div class="message-content">
-                  <p class="name">Emmy Lou</p>
-                  <div class="message">Good morning!🌈</div>
+                <div className="message-content">
+                  <p className="name">Emmy Lou</p>
+                  <div className="message">Good morning!🌈</div>
                 </div>
               </div>
 
-              <div class="message-wrapper">
-                <div class="profile-picture">
+              <div className="message-wrapper">
+                <div className="profile-picture">
                   <img
                     src="https://images.unsplash.com/photo-1576110397661-64a019d88a98?ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80"
                     alt=""
                   />
                 </div>
-                <div class="message-content">
-                  <p class="name">Tim Russel</p>
-                  <div class="message">New design document⬇️</div>
-                  <div class="message-file">
-                    <div class="icon sketch">
+                <div className="message-content">
+                  <p className="name">Tim Russel</p>
+                  <div className="message">New design document⬇️</div>
+                  <div className="message-file">
+                    <div className="icon sketch">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"
@@ -349,59 +408,59 @@ const ChatRoom = () => {
                         </g>
                       </svg>
                     </div>
-                    <div class="file-info">
-                      <div class="file-name">NewYear.sketch</div>
-                      <div class="file-size">120 MB</div>
+                    <div className="file-info">
+                      <div className="file-name">NewYear.sketch</div>
+                      <div className="file-size">120 MB</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="message-wrapper">
-                <div class="profile-picture">
+              <div className="message-wrapper">
+                <div className="profile-picture">
                   <img
                     src="https://images.unsplash.com/photo-1581824283135-0666cf353f35?ixlib=rb-1.2.1&auto=format&fit=crop&w=1276&q=80"
                     alt=""
                   />
                 </div>
-                <div class="message-content">
-                  <p class="name">Ryan Patrick</p>
-                  <div class="message">Hi team!❤️</div>
-                  <div class="message">
-                    I downloaded the file <a class="mention">@timrussel</a>
+                <div className="message-content">
+                  <p className="name">Ryan Patrick</p>
+                  <div className="message">Hi team!❤️</div>
+                  <div className="message">
+                    I downloaded the file <a className="mention">@timrussel</a>
                   </div>
                 </div>
               </div>
 
-              <div class="message-wrapper reverse">
-                <div class="profile-picture">
+              <div className="message-wrapper reverse">
+                <div className="profile-picture">
                   <img
                     src="https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80"
                     alt=""
                   />
                 </div>
-                <div class="message-content">
-                  <p class="name">Emmy Lou</p>
-                  <div class="message">Woooww! Awesome❤️</div>
+                <div className="message-content">
+                  <p className="name">Emmy Lou</p>
+                  <div className="message">Woooww! Awesome❤️</div>
                 </div>
               </div>
             </div>
-            <div class="chat-typing-area-wrapper">
-              <div class="chat-typing-area">
+            <div className="chat-typing-area-wrapper">
+              <div className="chat-typing-area">
                 <input
                   type="text"
                   placeholder="Type your message..."
-                  class="chat-input"
+                  className="chat-input"
                 />
-                <button class="send-button">
+                <button className="send-button">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="feather feather-send"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="feather feather-send"
                     viewBox="0 0 24 24"
                   >
                     <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
@@ -410,39 +469,39 @@ const ChatRoom = () => {
               </div>
             </div>
           </div>
-          <div class="participants">
-            <div class="participant profile-picture">
+          <div className="participants">
+            <div className="participant profile-picture">
               <img
                 src="https://images.unsplash.com/photo-1576110397661-64a019d88a98?ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80"
                 alt=""
               />
             </div>
 
-            <div class="participant profile-picture">
+            <div className="participant profile-picture">
               <img
                 src="https://images.unsplash.com/photo-1566821582776-92b13ab46bb4?ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60"
                 alt=""
               />
             </div>
 
-            <div class="participant profile-picture">
+            <div className="participant profile-picture">
               <img
                 src="https://images.unsplash.com/photo-1600207438283-a5de6d9df13e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1234&q=80"
                 alt=""
               />
             </div>
 
-            <div class="participant profile-picture">
+            <div className="participant profile-picture">
               <img
                 src="https://images.unsplash.com/photo-1581824283135-0666cf353f35?ixlib=rb-1.2.1&auto=format&fit=crop&w=1276&q=80"
                 alt=""
               />
             </div>
-            <div class="participant-more">2+</div>
+            <div className="participant-more">2+</div>
           </div>
         </div>
         <button
-          class={`expand-btn ${isRightSideVisible ? "" : "show"}`}
+          className={`expand-btn ${isRightSideVisible ? "" : "show"}`}
           onClick={expandRightSide}
         >
           <svg
@@ -452,10 +511,10 @@ const ChatRoom = () => {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="feather feather-message-circle"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="feather feather-message-circle"
           >
             <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
           </svg>

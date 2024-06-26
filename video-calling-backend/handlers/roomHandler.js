@@ -29,6 +29,7 @@ const roomHandler = (socket) => {
       }
       console.log("Room participants:", room.participants);
       socket.join(roomId); // make the user join the socket room
+      socket.to(roomId).emit("user-joined", { peerId });
 
       // whenever anyone joins the room
 
@@ -40,8 +41,43 @@ const roomHandler = (socket) => {
     }
   };
 
+  const leavedRoom = async ({ roomId, peerId }) => {
+    console.log("leave room called", roomId, peerId);
+    const room = await Room.findById(roomId).populate("participants");
+
+    if (room) {
+      // Check if the participant is already in the room
+      const isParticipantExists = room.participants.some((participant) =>
+        participant.equals(peerId)
+      );
+
+      if (isParticipantExists) {
+        // Add the participant to the room
+        room.participants.pop(peerId);
+        await room.save(); // Save the room after modification
+      }
+
+      socket.to(roomId).emit("user-disconnected", {
+        peerId: peerId,
+      });
+
+      socket.leave(roomId);
+    }
+  };
+
+  const videoMuted = async ({ roomId, peerId, video }) => {
+    socket.to(roomId).emit("video-mute", { peerId, video });
+  };
+
+  const audioMuted = async ({ roomId, peerId, video }) => {
+    socket.to(roomId).emit("audio-mute", { peerId, video });
+  };
+
   socket.on("create-room", createRoom);
   socket.on("joined-room", joinedRoom);
+  socket.on("leave-room", leavedRoom);
+  socket.on("video-mute", videoMuted);
+  socket.on("audio-mute", audioMuted);
 };
 
 export default roomHandler;

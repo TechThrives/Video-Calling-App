@@ -1,5 +1,4 @@
 import React from "react";
-import { v4 as UUIDv4 } from "uuid";
 import { useSocket } from "../context/SocketContext";
 
 export const CreateMeeting = () => {
@@ -9,9 +8,5 @@ export const CreateMeeting = () => {
     socket.emit("create-room");
   };
 
-  return (
-    <button onClick={initRoom} className="btn btn-secondary">
-      Start a new meeting in a new room
-    </button>
-  );
+  return <button onClick={initRoom}>Start a new meeting in a new room</button>;
 };
