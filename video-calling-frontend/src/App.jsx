@@ -6,14 +6,14 @@ import { SocketProvider } from "./context/SocketContext";
 
 const App = () => {
   return (
-    <SocketProvider>
-      <Router>
+    <Router>
+      <SocketProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/chatroom/:roomId" element={<ChatRoom />} />
         </Routes>
-      </Router>
-    </SocketProvider>
+      </SocketProvider>
+    </Router>
   );
 };
 

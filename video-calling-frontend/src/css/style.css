@@ -8,7 +8,6 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
-  overflow: hidden;
 }
 button {
   outline: none;
@@ -81,7 +80,7 @@ body.dark .btn-close-right {
 .app-container {
   background-color: var(--app-background);
   width: 100%;
-  height: 100%;
+  height: 100vh;
   font-family: "DM Sans", sans-serif;
   display: flex;
   transition: 0.2s;
@@ -89,8 +88,8 @@ body.dark .btn-close-right {
 /*==================== Navigation ====================*/
 .left-side {
   position: relative;
-  padding: 16px;
-  flex-basis: 120px;
+  padding: 12px;
+  flex-basis: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -101,19 +100,19 @@ body.dark .btn-close-right {
   display: flex;
   flex-direction: column;
   background-color: var(--navigation-bg);
-  padding: 24px;
+  padding: 12px;
   border-radius: 10px;
   box-shadow: var(--navigation-box-shadow);
 }
 .nav-link + .nav-link {
-  margin-top: 32px;
+  margin-top: 20px;
 }
 .nav-link:hover svg {
   color: #3d42df;
 }
 .icon svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   color: var(--link-color);
   transition: 0.2s ease-in;
 }
@@ -124,6 +123,7 @@ body.dark .btn-close-right {
   padding: 16px;
   position: relative;
   transition: all 300ms cubic-bezier(0.19, 1, 0.56, 1);
+  display: none;
 }
 .right-side.show {
   display: block;
@@ -291,30 +291,42 @@ body.dark .btn-close-right {
 .app-main {
   flex: 1;
   width: 100%;
-  padding: 72px 32px 16px 32px;
+  padding: 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 .video-call-wrapper {
   width: 100%;
-  height: 100%;
-  border-radius: 16px;
-  overflow: hidden;
+  height: 86%;
+  overflow-y: scroll;
+  justify-content: center;
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
+  gap: 10px;
+  border-radius: 16px;
 }
 .video-participant {
-  width: 33.3%;
-  height: 50%;
+  width: 180px;
+  height: 180px;
   position: relative;
+}
+.video-participant video {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  object-fit: cover;
 }
 .video-participant img {
   width: 100%;
   height: 100%;
+  border-radius: 16px;
   object-fit: cover;
 }
 .name-tag {
+  display: none;
+  cursor: pointer;
   position: absolute;
   bottom: 12px;
   right: 12px;
@@ -324,12 +336,20 @@ body.dark .btn-close-right {
   border-radius: 4px;
   padding: 4px 12px;
 }
-.participant-actions {
-  position: absolute;
+.video-participant:hover .name-tag {
   display: flex;
+}
+
+.participant-action {
+  position: absolute;
+  display: none;
   left: 12px;
   top: 12px;
 }
+.video-participant:hover .participant-action {
+  display: flex;
+}
+
 .btn-mute,
 .btn-camera {
   width: 32px;
@@ -349,11 +369,13 @@ body.dark .btn-close-right {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-camera-off' viewBox='0 0 24 24'%3E%3Cpath d='M1 1l22 22M21 21H3a2 2 0 01-2-2V8a2 2 0 012-2h3m3-3h6l2 3h4a2 2 0 012 2v9.34m-7.72-2.06a4 4 0 11-5.56-5.56'/%3E%3C/svg%3E%0A");
 }
 .video-call-actions {
+  position: fixed;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-top: 64px;
   max-width: 500px;
+  bottom: 20px;
 }
 .video-action-button {
   background-repeat: no-repeat;
@@ -427,17 +449,13 @@ body.dark .btn-close-right {
   border-radius: 8px;
   min-width: 32px;
 }
-.participant-action {
-  position: absolute;
-  display: flex;
-  left: 12px;
-  top: 12px;
-}
+
+/*==================== Mode Switch ====================*/
 .mode-switch {
   z-index: 1;
-  position: absolute;
-  top: 20px;
-  left: 36px;
+  position: fixed;
+  top: 10%;
+  left: 26px;
   background-color: var(--chat-background);
   border: none;
   color: #ddd;
@@ -494,11 +512,10 @@ body.dark .btn-close-right {
   background-color: transparent;
   position: absolute;
   top: 24px;
-  right: 24px;
+  right: 40px;
   color: var(--light-font);
   outline: none;
   cursor: pointer;
-  display: none;
 }
 /*==================== MEDIA QUERIES ====================*/
 
@@ -514,7 +531,7 @@ body.dark .btn-close-right {
     background-color: var(--chat-background);
     transform: translateX(100%);
     z-index: 2;
-    width: 100%;
+    height: 100%;
   }
   .right-side.show {
     transform: translateX(0);
@@ -563,7 +580,33 @@ body.dark .btn-close-right {
 /*==================== Devices Between 520px - 720px ====================*/
 @media screen and (max-width: 520px) and (max-width: 720px) {
   .video-participant {
-    width: 50%;
-    height: 33.3%;
+    width: 150px;
+    height: 150px;
   }
+  .mode-switch {
+    top: 3%;
+  }
+}
+
+/*==================== ScrollBar ====================*/
+/* width */
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f50808;
+  border-radius: 2px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0a8028;
+  border-radius: 2px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #450aa3;
 }

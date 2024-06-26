@@ -1,47 +1,33 @@
-import { v4 as UUIDv4 } from "uuid";
-
-// the below map stores for a room what all peers have joined
-/**
- * {1: [u1, u2, u3], 2: [u4,u5,u6]}
- */
-
-const rooms = {};
+import Room from "../model/room";
+import User from "../model/user";
 
 const roomHandler = (socket) => {
-  const createRoom = () => {
-    // this will be our unique room id in which multiple
-    // connection will exchange data
-    const roomId = UUIDv4();
-
-    // we will make the socket connection enter a new room
-    socket.join(roomId);
-
-    rooms[roomId] = []; // create a new entry for the room
-
-    // we will emit an event from server side that
-    // socket connection has been added to a room
-    socket.emit("room-created", { roomId });
-    console.log("Room created with id", roomId);
+  // Create a room
+  const createRoom = async () => {
+    const room = await Room.create({ participants: [] });
+    console.log("Room created", room);
+    socket.join(room._id);
+    socket.emit("room-created", { roomId: room._id });
   };
 
-  /**
-   *
-   * The below function is executed everytime a user(creator or joinee) joins
-   * a new room
-   */
-  const joinedRoom = ({ roomId, peerId }) => {
-    console.log("joined room called", rooms, roomId, peerId);
-    if (rooms[roomId]) {
-      // If the given roomId exist in the in memory db
-      console.log(
-        "New user has joined room",
-        roomId,
-        "with peer id as",
-        peerId
+  //new user joins the room
+  const joinedRoom = async ({ roomId, peerId }) => {
+    console.log("joined room called", roomId, peerId);
+    // Find the room by ID and populate the participants
+    const room = await Room.findById(roomId).populate("participants");
+
+    if (room) {
+      // Check if the participant is already in the room
+      const isParticipantExists = room.participants.some((participant) =>
+        participant.equals(peerId)
       );
-      // the moment new user joins, add the peerId to the key of roomId
-      rooms[roomId].push(peerId);
-      console.log("added peer to room", rooms);
+
+      if (!isParticipantExists) {
+        // Add the participant to the room
+        room.participants.push(peerId);
+        await room.save(); // Save the room after modification
+      }
+      console.log("Room participants:", room.participants);
       socket.join(roomId); // make the user join the socket room
 
       // whenever anyone joins the room
@@ -51,19 +37,9 @@ const roomHandler = (socket) => {
         // then from our server we will emit an event to all the clients conn that a new peer has added
         socket.to(roomId).emit("user-joined", { peerId });
       });
-
-      // below event is for logging purpose
-      socket.emit("get-users", {
-        roomId,
-        participants: rooms[roomId],
-      });
     }
   };
 
-  // When to call the above two function ?
-
-  // We will call the above two function when the client will
-  // emit events top create room and join room
   socket.on("create-room", createRoom);
   socket.on("joined-room", joinedRoom);
 };

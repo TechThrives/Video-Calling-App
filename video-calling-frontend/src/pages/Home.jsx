@@ -1,7 +1,13 @@
 import React from "react";
+import { CreateMeeting } from "../components/CreateMeeting";
 
 const Home = () => {
-  return <div>Home</div>;
+  return (
+    <div>
+      CreateMeeting
+      <CreateMeeting />
+    </div>
+  );
 };
 
 export default Home;

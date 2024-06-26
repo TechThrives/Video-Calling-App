@@ -16,7 +16,7 @@ import {
   initialState,
 } from "../reducers/PeerReducer";
 
-const WS_Server = "http://localhost:5000";
+const WS_Server = "http://192.168.0.111:5000";
 
 // Create the context
 export const SocketContext = createContext(null);
@@ -39,7 +39,7 @@ export const SocketProvider = ({ children }) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true,
+        audio: false,
       });
       setStream(stream);
     } catch (error) {
@@ -58,12 +58,10 @@ export const SocketProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // Initialize user ID and Peer connection
-    const userId = UUIDv4();
-    const newPeer = new Peer(userId, {
-      host: "localhost",
-      port: 9000,
-      path: "/myapp",
+    const newPeer = new Peer("667ad717c58ae5fbe2ab30ba", {
+      // host: "localhost",
+      // port: 9000,
+      // path: "/myapp",
     });
     setUser(newPeer);
 
@@ -71,12 +69,7 @@ export const SocketProvider = ({ children }) => {
 
     // Socket event listeners
     socket.on("room-created", enterRoom);
-    socket.on("get-users", fetchParticipantList);
-
-    return () => {
-      socket.off("room-created", enterRoom);
-      socket.off("get-users", fetchParticipantList);
-    };
+    socket.on("joined-room", fetchParticipantList);
   }, []);
 
   useEffect(() => {
@@ -96,16 +89,12 @@ export const SocketProvider = ({ children }) => {
       console.log("Receiving a call");
       call.answer(stream);
       call.on("stream", (remoteStream) => {
+        console.log("call peer", call.peer);
         peerDispatch(addPeerAction(call.peer, remoteStream));
       });
     });
 
     socket.emit("ready");
-
-    return () => {
-      socket.off("user-joined");
-      user.off("call");
-    };
   }, [user, stream]);
 
   return (

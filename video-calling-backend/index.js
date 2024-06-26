@@ -1,11 +1,18 @@
 import express from "express";
-import ServerConfig from "./config/serverConfig";
+import serverConfig from "./config/serverConfig";
+import dbConfig from "./config/dbConfig";
 import { Server } from "socket.io";
 import http from "http";
 import cors from "cors";
 import roomHandler from "./handlers/roomHandler";
 
 const app = express();
+
+// Handle DB connection errors
+
+dbConfig.then(() => {
+  console.log("DB CONNECTED");
+});
 
 app.use(cors());
 
@@ -26,8 +33,8 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(ServerConfig.PORT, () => {
-  console.log(`Server is up at port ${ServerConfig.PORT}`);
+server.listen(serverConfig.PORT, () => {
+  console.log(`Server is up at port ${serverConfig.PORT}`);
 });
 
 //peerjs --port 9000 --key peerjs --path /myapp

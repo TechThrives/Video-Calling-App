@@ -4,7 +4,7 @@ export const ADD_PEER = "ADD_PEER";
 export const REMOVE_PEER = "REMOVE_PEER";
 
 // Initial state
-const initialState = {};
+export const initialState = {};
 
 export const addPeerAction = (peerId, stream) => ({
   type: ADD_PEER,

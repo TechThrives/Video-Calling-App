@@ -1,9 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
-import UserFeedPlayer from "../components/UserFeedPlayer";
+import VideoParticipant from "../components/VideoParticipant";
 
 const ChatRoom = () => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isRightSideVisible, setIsRightSideVisible] = useState(false);
+
   const { roomId } = useParams();
   const { socket, user, stream, peerItems } = useSocket();
 
@@ -12,15 +15,70 @@ const ChatRoom = () => {
     // anyone is added the server knows that new people have been added\
     // to this room
     if (user) {
-      console.log("New user with id", user._id, "has joined room", id);
-      socket.emit("joined-room", { roomId: id, peerId: user._id });
+      console.log("New user ", user._id, "has joined room", roomId);
+      socket.emit("joined-room", { roomId: roomId, peerId: user._id });
     }
-  }, [id, user, socket]);
+    console.log("peerItems", peerItems);
+  }, [roomId, user, socket]);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+
+    return () => {
+      document.body.classList.remove("dark"); // Clean up on component unmount
+    };
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prevMode) => !prevMode);
+  };
+
+  const closeRightSide = () => {
+    setIsRightSideVisible(false);
+  };
+
+  const expandRightSide = () => {
+    setIsRightSideVisible(true);
+  };
+
+  const handleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if (document.documentElement.mozRequestFullScreen) {
+        // Firefox
+        document.documentElement.mozRequestFullScreen();
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        // Chrome, Safari, and Opera
+        document.documentElement.webkitRequestFullscreen();
+      } else if (document.documentElement.msRequestFullscreen) {
+        // IE/Edge
+        document.documentElement.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        // Firefox
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        // Chrome, Safari, and Opera
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        // IE/Edge
+        document.msExitFullscreen();
+      }
+    }
+  };
 
   return (
     <>
       <div class="app-container">
-        <button class="mode-switch">
+        <button class="mode-switch" onClick={toggleDarkMode}>
           <svg
             class="sun feather feather-sun"
             fill="none"
@@ -48,7 +106,7 @@ const ChatRoom = () => {
             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
           </svg>
         </button>
-        <div class="left-side">
+        <div class={`left-side`}>
           <div class="navigation">
             <a href="#" class="nav-link icon">
               <svg
@@ -166,130 +224,26 @@ const ChatRoom = () => {
           </div>
         </div>
         <div class="app-main">
+          <VideoParticipant stream={stream} />
           <div class="video-call-wrapper">
-            <div class="video-participant">
-              <div class="participant-action">
-                <button class="btn-mute"></button>
-                <button class="btn-camera"></button>
-              </div>
-              <a href="#" class="name-tag">
-                Andy Will
-              </a>
-              <img
-                src="https://images.unsplash.com/photo-1566821582776-92b13ab46bb4?ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60"
-                alt="participant"
-              />
-            </div>
-            <div class="video-participant">
-              <div class="participant-action">
-                <button class="btn-mute"></button>
-                <button class="btn-camera"></button>
-              </div>
-              <a href="#" class="name-tag">
-                Emmy Lou
-              </a>
-              <img
-                src="https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1650&q=80"
-                alt="participant"
-              />
-            </div>
-            <div class="video-participant">
-              <div class="participant-action">
-                <button class="btn-mute"></button>
-                <button class="btn-camera"></button>
-              </div>
-              <a href="#" class="name-tag">
-                Tim Russel
-              </a>
-              <img
-                src="https://images.unsplash.com/photo-1576110397661-64a019d88a98?ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80"
-                alt="participant"
-              />
-            </div>
-            <div class="video-participant">
-              <div class="participant-action">
-                <button class="btn-mute"></button>
-                <button class="btn-camera"></button>
-              </div>
-              <a href="#" class="name-tag">
-                Jessica Bell
-              </a>
-              <img
-                src="https://images.unsplash.com/photo-1600207438283-a5de6d9df13e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1234&q=80"
-                alt="participant"
-              />
-            </div>
-            <div class="video-participant">
-              <div class="participant-action">
-                <button class="btn-mute"></button>
-                <button class="btn-camera"></button>
-              </div>
-              <a href="#" class="name-tag">
-                Ryan Patrick
-              </a>
-              <img
-                src="https://images.unsplash.com/photo-1581824283135-0666cf353f35?ixlib=rb-1.2.1&auto=format&fit=crop&w=1276&q=80"
-                alt="participant"
-              />
-            </div>
-            <div class="video-participant">
-              <div class="participant-action">
-                <button class="btn-mute"></button>
-                <button class="btn-camera"></button>
-              </div>
-              <a href="#" class="name-tag">
-                Tina Cate
-              </a>
-              <img
-                src="https://images.unsplash.com/photo-1542596594-649edbc13630?ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80"
-                alt="participant"
-              />
-            </div>
+            {Object.keys(peerItems).map((peerId) => (
+              <VideoParticipant key={peerId} stream={stream} />
+            ))}
           </div>
 
           <div class="video-call-actions">
             <button class="video-action-button mic"></button>
             <button class="video-action-button camera"></button>
-            <button class="video-action-button maximize"></button>
+            <button
+              class="video-action-button maximize"
+              onClick={handleFullscreen}
+            ></button>
             <button class="video-action-button endcall">Leave</button>
-            <button class="video-action-button magnifier">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-zoom-in"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35M11 8v6M8 11h6" />
-              </svg>
-
-              <span>100%</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="feather feather-zoom-out"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                <line x1="8" y1="11" x2="14" y2="11" />
-              </svg>
-            </button>
           </div>
         </div>
 
-        <div class="right-side">
-          <button class="btn-close-right">
+        <div class={`right-side ${isRightSideVisible ? "show" : ""}`}>
+          <button class="btn-close-right" onClick={closeRightSide}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -308,9 +262,6 @@ const ChatRoom = () => {
             </svg>
           </button>
           <div class="chat-container">
-            <div class="chat-header">
-              <button class="chat-header-button">Live Chat</button>
-            </div>
             <div class="chat-area">
               <div class="message-wrapper">
                 <div class="profile-picture">
@@ -324,6 +275,7 @@ const ChatRoom = () => {
                   <div class="message">Helloo team!😍</div>
                 </div>
               </div>
+
               <div class="message-wrapper">
                 <div class="profile-picture">
                   <img
@@ -339,6 +291,7 @@ const ChatRoom = () => {
                   </div>
                 </div>
               </div>
+
               <div class="message-wrapper">
                 <div class="profile-picture">
                   <img
@@ -351,6 +304,7 @@ const ChatRoom = () => {
                   <div class="message">Hi team! Let's get started it.</div>
                 </div>
               </div>
+
               <div class="message-wrapper reverse">
                 <div class="profile-picture">
                   <img
@@ -363,6 +317,7 @@ const ChatRoom = () => {
                   <div class="message">Good morning!🌈</div>
                 </div>
               </div>
+
               <div class="message-wrapper">
                 <div class="profile-picture">
                   <img
@@ -401,6 +356,7 @@ const ChatRoom = () => {
                   </div>
                 </div>
               </div>
+
               <div class="message-wrapper">
                 <div class="profile-picture">
                   <img
@@ -461,18 +417,21 @@ const ChatRoom = () => {
                 alt=""
               />
             </div>
+
             <div class="participant profile-picture">
               <img
                 src="https://images.unsplash.com/photo-1566821582776-92b13ab46bb4?ixlib=rb-1.2.1&auto=format&fit=crop&w=900&q=60"
                 alt=""
               />
             </div>
+
             <div class="participant profile-picture">
               <img
                 src="https://images.unsplash.com/photo-1600207438283-a5de6d9df13e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1234&q=80"
                 alt=""
               />
             </div>
+
             <div class="participant profile-picture">
               <img
                 src="https://images.unsplash.com/photo-1581824283135-0666cf353f35?ixlib=rb-1.2.1&auto=format&fit=crop&w=1276&q=80"
@@ -482,7 +441,10 @@ const ChatRoom = () => {
             <div class="participant-more">2+</div>
           </div>
         </div>
-        <button class="expand-btn">
+        <button
+          class={`expand-btn ${isRightSideVisible ? "" : "show"}`}
+          onClick={expandRightSide}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
