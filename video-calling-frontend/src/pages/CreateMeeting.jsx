@@ -2,13 +2,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSocket } from "../context/SocketContext";
 
 export const CreateMeeting = () => {
-  const { socket, stream, handleMic, handleVideo, buttonState } = useSocket();
+  const { socket, stream, setStream, handleMic, handleVideo, buttonState } =
+    useSocket();
+  const videoRef = useRef(null);
+
   const initRoom = () => {
     console.log("Initialising a req to create a room", socket);
     socket.emit("create-room");
   };
 
-  const videoRef = useRef(null);
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;

@@ -8,9 +8,9 @@ export const AUDIO_TOGGLE = "AUDIO_TOGGLE";
 // Initial state
 export const initialState = {};
 
-export const addPeerAction = (peerId, stream) => ({
+export const addPeerAction = (peerId, stream, audio, video) => ({
   type: ADD_PEER,
-  payload: { peerId, stream },
+  payload: { peerId, stream, audio, video },
 });
 
 export const removePeerAction = (peerId) => ({
@@ -31,6 +31,17 @@ export const audioToggleAction = (peerId, audio) => ({
 export const peerReducer = (state, action) => {
   switch (action.type) {
     case ADD_PEER:
+      // Add the new peer to the state
+      const videoT = action.payload.stream.getVideoTracks();
+      const audioT = action.payload.stream.getAudioTracks();
+
+      if (videoT.length > 0) {
+        videoT[0].enabled = action.payload.video;
+      }
+
+      if (audioT.length > 0) {
+        audioT[0].enabled = action.payload.audio;
+      }
       return {
         ...state,
         [action.payload.peerId]: {

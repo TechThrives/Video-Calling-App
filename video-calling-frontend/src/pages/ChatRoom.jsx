@@ -13,7 +13,9 @@ const ChatRoom = () => {
   const {
     socket,
     user,
+    setUser,
     stream,
+    setStream,
     handleMic,
     handleVideo,
     buttonState,
@@ -22,12 +24,30 @@ const ChatRoom = () => {
   } = useSocket();
 
   useEffect(() => {
-    if (user) {
+    if (user && user._id && stream) {
       console.log("New user ", user._id, "has joined room", roomId);
-      socket.emit("joined-room", { roomId: roomId, peerId: user._id });
+      const audio = stream.getAudioTracks()[0].enabled;
+      const video = stream.getVideoTracks()[0].enabled;
+      socket.emit("joined-room", {
+        roomId: roomId,
+        peerId: user._id,
+        audio: audio,
+        video: video,
+      });
     }
-    console.log("peerItems", peerItems);
-  }, [roomId, user, socket]);
+
+    return () => {
+      socket.off("joined-room");
+      console.log("User:", user._id);
+      if (user && user._id) {
+        socket.emit("left-room", {
+          roomId: roomId,
+          peerId: user._id,
+        });
+      }
+      console.log("Room component disposed");
+    };
+  }, [roomId, user, socket, stream]);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -86,8 +106,7 @@ const ChatRoom = () => {
   };
 
   const handleLeave = () => {
-    socket.emit("leave-room", { roomId: roomId, peerId: user._id });
-    user.destroy();
+    setStream(null);
     navigate("/");
   };
 

@@ -41,11 +41,6 @@ export const SocketProvider = ({ children }) => {
     fullscreen: false,
   });
 
-  const fetchParticipantList = ({ roomId, participants }) => {
-    console.log("Fetched room participants");
-    console.log(roomId, participants);
-  };
-
   const fetchUserFeed = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
@@ -62,7 +57,7 @@ export const SocketProvider = ({ children }) => {
     if (!stream) return;
     let audioTrack = stream.getAudioTracks()[0];
     audioTrack.enabled = !audioTrack.enabled;
-    if (roomId) {
+    if (roomId && user._id) {
       socket.emit("audio-mute", {
         roomId: roomId,
         peerId: user._id,
@@ -79,9 +74,7 @@ export const SocketProvider = ({ children }) => {
     if (!stream) return;
     let videoTrack = stream.getVideoTracks()[0];
     videoTrack.enabled = !videoTrack.enabled;
-    if (roomId) {
-      console.log("video clicked");
-
+    if (roomId && user._id) {
       socket.emit("video-mute", {
         roomId: roomId,
         peerId: user._id,
@@ -96,6 +89,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     const userId = localStorage.getItem("username");
+    if (!userId) navigate("/");
     const newPeer = new Peer(userId, {
       host: "192.168.0.111",
       port: 9000,
@@ -106,20 +100,25 @@ export const SocketProvider = ({ children }) => {
 
     fetchUserFeed();
 
-    const enterRoom = ({ roomId }) => {
-      navigate(`chatroom/${roomId}`);
-    };
-
     // we will transfer the user to the room page when we collect an event of room-created from server
-    socket.on("room-created", enterRoom);
+    socket.on("room-created", ({ roomId }) => {
+      navigate(`chatroom/${roomId}`);
+    });
 
-    socket.on("get-users", fetchParticipantList);
+    return () => {
+      socket.off("room-created");
+      setStream(null);
+    };
   }, []);
 
   useEffect(() => {
     if (!user || !stream) return;
 
-    socket.on("user-joined", ({ peerId }) => {
+    socket.on("invalid-request", () => {
+      navigate("/");
+    });
+
+    socket.on("user-joined", ({ peerId, audio, video }) => {
       navigator.mediaDevices
         .getUserMedia({
           video: true,
@@ -129,7 +128,7 @@ export const SocketProvider = ({ children }) => {
           var call = user.call(peerId, userstream);
           console.log("Call and new peer", call, peerId);
           call.on("stream", (peerStream) => {
-            peerDispatch(addPeerAction(peerId, peerStream));
+            peerDispatch(addPeerAction(peerId, peerStream, audio, video));
           });
         });
     });
@@ -149,7 +148,7 @@ export const SocketProvider = ({ children }) => {
       );
     });
 
-    socket.on("user-disconnected", ({ peerId }) => {
+    socket.on("left-room", ({ peerId }) => {
       console.log("User disconnected", peerId);
       peerDispatch(removePeerAction(peerId));
     });
@@ -163,6 +162,16 @@ export const SocketProvider = ({ children }) => {
     });
 
     socket.emit("ready");
+
+    return () => {
+      socket.off("room-created");
+      socket.off("get-users");
+      socket.off("user-joined");
+      socket.off("left-room");
+      socket.off("invalid-request");
+      socket.off("video-mute");
+      socket.off("audio-mute");
+    };
   }, [stream, user]);
 
   return (
