@@ -35,6 +35,11 @@ export const SocketProvider = ({ children }) => {
 
   const [user, setUser] = useState();
   const [stream, setStream] = useState();
+  const [buttonState, setButtonState] = useState({
+    mic: false,
+    video: false,
+    fullscreen: false,
+  });
 
   const fetchParticipantList = ({ roomId, participants }) => {
     console.log("Fetched room participants");
@@ -46,7 +51,47 @@ export const SocketProvider = ({ children }) => {
       video: true,
       audio: true,
     });
+    let audioTrack = stream.getAudioTracks()[0];
+    audioTrack.enabled = false;
+    let videoTrack = stream.getVideoTracks()[0];
+    videoTrack.enabled = false;
     setStream(stream);
+  };
+
+  const handleMic = ({ roomId }) => {
+    if (!stream) return;
+    let audioTrack = stream.getAudioTracks()[0];
+    audioTrack.enabled = !audioTrack.enabled;
+    if (roomId) {
+      socket.emit("audio-mute", {
+        roomId: roomId,
+        peerId: user._id,
+        audio: audioTrack.enabled,
+      });
+    }
+    setButtonState((prev) => ({
+      ...prev,
+      mic: audioTrack.enabled,
+    }));
+  };
+
+  const handleVideo = ({ roomId }) => {
+    if (!stream) return;
+    let videoTrack = stream.getVideoTracks()[0];
+    videoTrack.enabled = !videoTrack.enabled;
+    if (roomId) {
+      console.log("video clicked");
+
+      socket.emit("video-mute", {
+        roomId: roomId,
+        peerId: user._id,
+        video: videoTrack.enabled,
+      });
+    }
+    setButtonState((prev) => ({
+      ...prev,
+      video: videoTrack.enabled,
+    }));
   };
 
   useEffect(() => {
@@ -130,6 +175,10 @@ export const SocketProvider = ({ children }) => {
         setStream,
         peerItems,
         peerDispatch,
+        buttonState,
+        setButtonState,
+        handleMic,
+        handleVideo,
       }}
     >
       {children}

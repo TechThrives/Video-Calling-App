@@ -2,19 +2,24 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
 import VideoParticipant from "../components/VideoParticipant";
+import VideoUser from "../components/VideoUser";
 
 const ChatRoom = () => {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isRightSideVisible, setIsRightSideVisible] = useState(false);
-  const [buttonState, setButtonState] = useState({
-    mic: true,
-    video: true,
-    fullscreen: false,
-  });
 
   const { roomId } = useParams();
-  const { socket, user, setUser, stream, setStream, peerItems } = useSocket();
+  const {
+    socket,
+    user,
+    stream,
+    handleMic,
+    handleVideo,
+    buttonState,
+    setButtonState,
+    peerItems,
+  } = useSocket();
 
   useEffect(() => {
     if (user) {
@@ -84,36 +89,6 @@ const ChatRoom = () => {
     socket.emit("leave-room", { roomId: roomId, peerId: user._id });
     user.destroy();
     navigate("/");
-  };
-
-  const handleMic = () => {
-    if (!stream) return;
-    let audioTrack = stream.getAudioTracks()[0];
-    audioTrack.enabled = !audioTrack.enabled;
-    socket.emit("audio-mute", {
-      roomId: roomId,
-      peerId: user._id,
-      audio: audioTrack.enabled,
-    });
-    setButtonState((prev) => ({
-      ...prev,
-      mic: audioTrack.enabled,
-    }));
-  };
-
-  const handleVideo = () => {
-    if (!stream) return;
-    let videoTrack = stream.getVideoTracks()[0];
-    videoTrack.enabled = !videoTrack.enabled;
-    socket.emit("video-mute", {
-      roomId: roomId,
-      peerId: user._id,
-      video: videoTrack.enabled,
-    });
-    setButtonState((prev) => ({
-      ...prev,
-      video: videoTrack.enabled,
-    }));
   };
 
   return (
@@ -265,7 +240,7 @@ const ChatRoom = () => {
           </div>
         </div>
         <div className="app-main">
-          <VideoParticipant stream={stream} />
+          <VideoUser stream={stream} />
           <div className="video-call-wrapper">
             {Object.keys(peerItems).map((peerId) => (
               <VideoParticipant
@@ -273,6 +248,9 @@ const ChatRoom = () => {
                 stream={peerItems[peerId].stream}
               />
             ))}
+            {/* {Array.from("ABCDEFG").map((peerId) => (
+              <VideoParticipant key={peerId} stream={stream} />
+            ))} */}
           </div>
 
           <div className="video-call-actions">
@@ -280,13 +258,13 @@ const ChatRoom = () => {
               className={`video-action-button mic ${
                 buttonState.mic ? "on" : ""
               }`}
-              onClick={handleMic}
+              onClick={() => handleMic({ roomId: roomId })}
             ></button>
             <button
               className={`video-action-button camera ${
                 buttonState.video ? "on" : ""
               }`}
-              onClick={handleVideo}
+              onClick={() => handleVideo({ roomId: roomId })}
             ></button>
             <button
               className={`video-action-button maximize ${

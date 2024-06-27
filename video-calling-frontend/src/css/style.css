@@ -8,6 +8,7 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
+  font-family: "Poppins";
 }
 button {
   outline: none;
@@ -16,6 +17,29 @@ button {
 }
 button:hover {
   opacity: 0.7;
+}
+.btn {
+  color: white;
+  background-color: #2f3035;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  text-align: center;
+  margin-right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.btn:hover {
+  background-color: #222222;
+  opacity: 1;
 }
 a {
   text-decoration: none;
@@ -460,6 +484,31 @@ body.dark .btn-close-right {
   min-width: 32px;
 }
 
+.user-div {
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
+  z-index: 1;
+}
+
+.video-user {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  transition: 0.3s ease-in-out;
+}
+.video-user video {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.video-user:hover {
+  width: 120px;
+  height: 120px;
+}
+
 /*==================== Mode Switch ====================*/
 .mode-switch {
   z-index: 1;
@@ -527,6 +576,55 @@ body.dark .btn-close-right {
   outline: none;
   cursor: pointer;
 }
+
+/*==================== Meet Join ====================*/
+.create-meet {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.meet-info {
+  width: 50%;
+  padding: 1rem;
+}
+.meet-video {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.video-own {
+  position: relative;
+  min-width: 250px;
+  min-height: 250px;
+  max-width: 350px;
+  max-height: 350px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+}
+
+.video-own video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* make the video cover the entire container */
+  border-radius: 10px;
+}
+
+.video-own .video-call-actions {
+  position: absolute;
+  bottom: calc(10% + 15px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+}
+
 /*==================== MEDIA QUERIES ====================*/
 
 /*==================== Devices smaller than 900px ====================*/
@@ -585,6 +683,9 @@ body.dark .btn-close-right {
   .video-action-button.magnifier span {
     margin: 0 4px;
     font-size: 12px;
+  }
+  .video-own .video-call-actions {
+    bottom: 15%;
   }
 }
 /*==================== Devices Between 520px - 720px ====================*/

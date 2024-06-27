@@ -9,7 +9,6 @@ import roomHandler from "./handlers/roomHandler";
 const app = express();
 
 // Handle DB connection errors
-
 dbConfig.then(() => {
   console.log("DB CONNECTED");
 });
