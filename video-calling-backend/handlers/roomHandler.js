@@ -70,8 +70,6 @@ const roomHandler = (socket) => {
           // Create a new participant
           const newParticipant = new Participant({
             user: peerId,
-            audio,
-            video,
           });
 
           // Save the new participant
@@ -83,13 +81,13 @@ const roomHandler = (socket) => {
         }
 
         socket.join(roomId); // make the user join the socket room
-        socket.to(roomId).emit("user-joined", { peerId, audio, video });
+        socket.to(roomId).emit("user-joined", { peer: user, audio, video });
 
         // new user joined and ready to send and receive stream
         socket.on("ready", () => {
           // from the frontend once someone joins the room we will emit a ready event
           // then from our server we will emit an event to all the clients conn that a new peer has added
-          socket.to(roomId).emit("user-joined", { peerId, audio, video });
+          socket.to(roomId).emit("user-joined", { peer: user, audio, video });
         });
       }
     } else {
@@ -101,6 +99,10 @@ const roomHandler = (socket) => {
 
   const leftRoom = async ({ roomId, peerId }) => {
     console.log("user left room", roomId, peerId);
+
+    // Find the user by ID
+    const user = await User.findById(peerId);
+
     const room = await Room.findById(roomId).populate({
       path: "participants",
       populate: {
@@ -109,7 +111,7 @@ const roomHandler = (socket) => {
       },
     });
 
-    if (room) {
+    if (user && room) {
       // Check if the participant is already in the room by checking the user's ID
       const isParticipantExists = room.participants.some(
         (participant) =>
@@ -127,7 +129,7 @@ const roomHandler = (socket) => {
       }
 
       socket.to(roomId).emit("left-room", {
-        peerId: peerId,
+        peer: user,
       });
 
       socket.leave(roomId);
@@ -135,58 +137,13 @@ const roomHandler = (socket) => {
   };
 
   const videoMuted = async ({ roomId, peerId, video }) => {
-    const room = await Room.findById(roomId).populate({
-      path: "participants",
-      populate: {
-        path: "user",
-        model: "User",
-      },
-    });
-
-    if (room) {
-      // Find the participant in the room
-      const participant = room.participants.find(
-        (participant) =>
-          participant.user &&
-          participant.user._id &&
-          participant.user._id.equals(peerId)
-      );
-      if (participant) {
-        // Update the video field
-        participant.video = video;
-        await participant.save(); // Save the updated participant
-        // Emit the video-mute event to other clients in the room
-        socket.to(roomId).emit("video-mute", { peerId, video });
-      }
-    }
+    // Emit the video-mute event to other clients in the room
+    socket.to(roomId).emit("video-mute", { peerId, video });
   };
 
   const audioMuted = async ({ roomId, peerId, audio }) => {
-    const room = await Room.findById(roomId).populate({
-      path: "participants",
-      populate: {
-        path: "user",
-        model: "User",
-      },
-    });
-
-    if (room) {
-      // Find the participant in the room
-      const participant = room.participants.find(
-        (participant) =>
-          participant.user &&
-          participant.user._id &&
-          participant.user._id.equals(peerId)
-      );
-
-      if (participant) {
-        // Update the video field
-        participant.audio = audio;
-        await participant.save(); // Save the updated participant
-        // Emit the video-mute event to other clients in the room
-        socket.to(roomId).emit("audio-mute", { peerId, audio });
-      }
-    }
+    // Emit the video-mute event to other clients in the room
+    socket.to(roomId).emit("audio-mute", { peerId, audio });
   };
 
   socket.on("check-room", checkRoom);

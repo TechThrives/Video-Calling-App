@@ -18,7 +18,6 @@ const Lobby = ({ roomData, isRoomExist }) => {
   };
 
   const joinRoom = () => {
-    console.log("req to join a room");
     setIsJoined(true);
   };
   return (

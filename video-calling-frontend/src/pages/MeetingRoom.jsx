@@ -253,7 +253,8 @@ const MeetingRoom = () => {
             {Object.keys(peerItems).map((peerId) => (
               <VideoParticipant
                 key={peerId}
-                stream={peerItems[peerId].stream}
+                stream={peerItems[peerId].peerStream}
+                user={peerItems[peerId].user}
               />
             ))}
             {/* {Array.from("ABCDEFG").map((peerId) => (

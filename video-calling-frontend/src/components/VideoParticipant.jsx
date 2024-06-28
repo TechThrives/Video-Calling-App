@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
-const VideoParticipant = ({ stream, name }) => {
+const VideoParticipant = ({ stream, user }) => {
   const videoRef = useRef(null);
   useEffect(() => {
     if (videoRef.current && stream) {
@@ -25,7 +25,7 @@ const VideoParticipant = ({ stream, name }) => {
           }`}
         ></button>
       </div>
-      <p className="name-tag">{name}</p>
+      <p className="name-tag">{user.name}</p>
       <video ref={videoRef} autoPlay />
       {/* <img
         ref={videoRef}

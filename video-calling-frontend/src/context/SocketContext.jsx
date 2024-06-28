@@ -105,15 +105,9 @@ export const SocketProvider = ({ children }) => {
 
     fetchUserFeed();
 
-    // we will transfer the user to the room page when we collect an event of room-created from server
-    socket.on("room-created", ({ roomId }) => {
-      navigate(`/meetingroom/${roomId}`);
-      setIsJoined(true);
-    });
-
     return () => {
-      socket.off("room-created");
-      setStream(null);
+      stream?.getTracks().forEach((track) => track.stop());
+      newPeer.destroy();
     };
   }, []);
 
@@ -124,25 +118,38 @@ export const SocketProvider = ({ children }) => {
       navigate("/");
     });
 
-    socket.on("user-joined", ({ peerId, audio, video }) => {
+    // we will transfer the user to the room page when we collect an event of room-created from server
+    socket.on("room-created", ({ roomId }) => {
+      navigate(`/meetingroom/${roomId}`);
+      setIsJoined(true);
+      console.log("New room created user", user);
+    });
+
+    socket.on("user-joined", ({ peer, audio, video }) => {
       navigator.mediaDevices
         .getUserMedia({
           video: true,
           audio: true,
         })
-        .then((userstream) => {
-          var options = {
-            metadata: {
-              audio: stream.getAudioTracks()[0].enabled,
-              video: stream.getVideoTracks()[0].enabled,
-            },
-          };
-          var call = user.call(peerId, userstream, options);
+        .then(
+          (userstream) => {
+            const options = {
+              metadata: {
+                audio: stream.getAudioTracks()[0].enabled,
+                video: stream.getVideoTracks()[0].enabled,
+                name: "KKK",
+              },
+            };
 
-          call.on("stream", (peerStream) => {
-            peerDispatch(addPeerAction(peerId, peerStream, audio, video));
-          });
-        });
+            const call = user.call(peer._id, userstream, options);
+            call.on("stream", (peerStream) => {
+              peerDispatch(addPeerAction(peer, peerStream, audio, video));
+            });
+          },
+          (err) => {
+            console.log("Failed to get local stream", err);
+          }
+        );
     });
 
     user.on("call", (call) => {
@@ -150,10 +157,13 @@ export const SocketProvider = ({ children }) => {
       navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(
         (userstream) => {
           call.answer(userstream);
-          call.on("stream", function (remoteStream) {
+          call.on("stream", (remoteStream) => {
             peerDispatch(
               addPeerAction(
-                call.peer,
+                {
+                  _id: call.peer,
+                  name: call.metadata.name,
+                },
                 remoteStream,
                 call.metadata.audio,
                 call.metadata.video
@@ -161,15 +171,15 @@ export const SocketProvider = ({ children }) => {
             );
           });
         },
-        function (err) {
+        (err) => {
           console.log("Failed to get local stream", err);
         }
       );
     });
 
-    socket.on("left-room", ({ peerId }) => {
-      console.log("User disconnected", peerId);
-      peerDispatch(removePeerAction(peerId));
+    socket.on("left-room", ({ peer }) => {
+      console.log("User disconnected", peer);
+      peerDispatch(removePeerAction(peer));
     });
 
     socket.on("video-mute", ({ peerId, video }) => {
