@@ -374,8 +374,8 @@ body.dark .btn-close-right {
   display: flex;
 }
 
-.btn-mute,
-.btn-camera {
+.btn-mute,.btn-unmute,
+.btn-camera-on, .btn-camera-off {
   width: 32px;
   height: 32px;
   border-radius: 4px;
@@ -389,8 +389,16 @@ body.dark .btn-close-right {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mic-off' viewBox='0 0 24 24'%3E%3Cpath d='M1 1l22 22M9 9v3a3 3 0 005.12 2.12M15 9.34V4a3 3 0 00-5.94-.6'/%3E%3Cpath d='M17 16.95A7 7 0 015 12v-2m14 0v2a7 7 0 01-.11 1.23M12 19v4M8 23h8'/%3E%3C/svg%3E%0A");
   margin-right: 4px;
 }
-.btn-camera {
+.btn-unmute {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-mic' viewBox='0 0 24 24'%3e%3cpath d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'%3e%3c/path%3e%3cpath d='M19 10v2a7 7 0 0 1-14 0v-2'%3e%3c/path%3e%3cline x1='12' y1='19' x2='12' y2='23'%3e%3c/line%3e%3cline x1='8' y1='23' x2='16' y2='23'%3e%3c/line%3e%3c/svg%3e");
+  margin-right: 4px;
+}
+.btn-camera-off {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-camera-off' viewBox='0 0 24 24'%3E%3Cpath d='M1 1l22 22M21 21H3a2 2 0 01-2-2V8a2 2 0 012-2h3m3-3h6l2 3h4a2 2 0 012 2v9.34m-7.72-2.06a4 4 0 11-5.56-5.56'/%3E%3C/svg%3E%0A");
+}
+
+.btn-camera-on {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-camera' viewBox='0 0 24 24'%3e%3cpath d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z' %3e%3c/path%3e%3ccircle cx='12' cy='13' r='4' %3e%3c/circle%3e%3c/svg%3e");
 }
 .video-call-actions {
   position: fixed;

@@ -1,10 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import ChatRoom from "./pages/ChatRoom";
 import Login from "./pages/Login";
 import SocketWrapper from "./components/SocketWrapper";
-import { CreateMeeting } from "./pages/CreateMeeting";
+import Meeting from "./pages/Meeting";
 
 const App = () => {
   return (
@@ -12,9 +11,9 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/chat" element={<SocketWrapper />}>
-          <Route path="create-meeting" element={<CreateMeeting />} />
-          <Route path="chatroom/:roomId" element={<ChatRoom />} />
+        <Route path="/meetingroom" element={<SocketWrapper />}>
+          <Route index path=":roomId" element={<Meeting />} />
+          <Route path=":roomId" element={<Meeting />} />
         </Route>
       </Routes>
     </Router>

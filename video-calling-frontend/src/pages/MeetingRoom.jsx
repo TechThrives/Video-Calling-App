@@ -4,7 +4,7 @@ import { useSocket } from "../context/SocketContext";
 import VideoParticipant from "../components/VideoParticipant";
 import VideoUser from "../components/VideoUser";
 
-const ChatRoom = () => {
+const MeetingRoom = () => {
   const navigate = useNavigate();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isRightSideVisible, setIsRightSideVisible] = useState(false);
@@ -35,18 +35,6 @@ const ChatRoom = () => {
         video: video,
       });
     }
-
-    return () => {
-      socket.off("joined-room");
-      console.log("User:", user._id);
-      if (user && user._id) {
-        socket.emit("left-room", {
-          roomId: roomId,
-          peerId: user._id,
-        });
-      }
-      console.log("Room component disposed");
-    };
   }, [roomId, user, socket, stream]);
 
   useEffect(() => {
@@ -107,6 +95,7 @@ const ChatRoom = () => {
 
   const handleLeave = () => {
     setStream(null);
+    socket.emit("left-room", { roomId: roomId, peerId: user._id });
     navigate("/");
   };
 
@@ -521,4 +510,4 @@ const ChatRoom = () => {
   );
 };
 
-export default ChatRoom;
+export default MeetingRoom;

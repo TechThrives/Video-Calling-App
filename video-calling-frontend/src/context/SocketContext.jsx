@@ -32,12 +32,13 @@ const socket = SocketIoClient(WS_Server, {
 export const SocketProvider = ({ children }) => {
   const navigate = useNavigate();
   const [peerItems, peerDispatch] = useReducer(peerReducer, initialState);
+  const [isJoined, setIsJoined] = useState(false);
 
   const [user, setUser] = useState();
-  const [stream, setStream] = useState();
+  const [stream, setStream] = useState(null);
   const [buttonState, setButtonState] = useState({
-    mic: false,
-    video: false,
+    mic: true,
+    video: true,
     fullscreen: false,
   });
 
@@ -47,9 +48,9 @@ export const SocketProvider = ({ children }) => {
       audio: true,
     });
     let audioTrack = stream.getAudioTracks()[0];
-    audioTrack.enabled = false;
+    audioTrack.enabled = buttonState.mic;
     let videoTrack = stream.getVideoTracks()[0];
-    videoTrack.enabled = false;
+    videoTrack.enabled = buttonState.video;
     setStream(stream);
   };
 
@@ -89,7 +90,11 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     const userId = localStorage.getItem("username");
-    if (!userId) navigate("/");
+    if (!userId) {
+      navigate("/");
+      return;
+    }
+
     const newPeer = new Peer(userId, {
       host: "192.168.0.111",
       port: 9000,
@@ -102,7 +107,8 @@ export const SocketProvider = ({ children }) => {
 
     // we will transfer the user to the room page when we collect an event of room-created from server
     socket.on("room-created", ({ roomId }) => {
-      navigate(`chatroom/${roomId}`);
+      navigate(`/meetingroom/${roomId}`);
+      setIsJoined(true);
     });
 
     return () => {
@@ -125,8 +131,14 @@ export const SocketProvider = ({ children }) => {
           audio: true,
         })
         .then((userstream) => {
-          var call = user.call(peerId, userstream);
-          console.log("Call and new peer", call, peerId);
+          var options = {
+            metadata: {
+              audio: stream.getAudioTracks()[0].enabled,
+              video: stream.getVideoTracks()[0].enabled,
+            },
+          };
+          var call = user.call(peerId, userstream, options);
+
           call.on("stream", (peerStream) => {
             peerDispatch(addPeerAction(peerId, peerStream, audio, video));
           });
@@ -134,12 +146,19 @@ export const SocketProvider = ({ children }) => {
     });
 
     user.on("call", (call) => {
-      console.log("New call", call);
+      console.log("Received call", call);
       navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(
         (userstream) => {
           call.answer(userstream);
           call.on("stream", function (remoteStream) {
-            peerDispatch(addPeerAction(call.peer, remoteStream));
+            peerDispatch(
+              addPeerAction(
+                call.peer,
+                remoteStream,
+                call.metadata.audio,
+                call.metadata.video
+              )
+            );
           });
         },
         function (err) {
@@ -186,6 +205,8 @@ export const SocketProvider = ({ children }) => {
         peerDispatch,
         buttonState,
         setButtonState,
+        isJoined,
+        setIsJoined,
         handleMic,
         handleVideo,
       }}

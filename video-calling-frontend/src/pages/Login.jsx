@@ -22,7 +22,7 @@ const Login = () => {
       </button>
 
       <br />
-      <button onClick={() => navigate(`/chat/create-meeting`)}>
+      <button onClick={() => navigate(`/meetingroom/:dfdfdfdf`)}>
         Create Meeting
       </button>
 
@@ -32,7 +32,7 @@ const Login = () => {
         placeholder="Enter meetingId"
         onChange={(e) => setMeeting(e.target.value)}
       />
-      <button onClick={() => navigate(`/chat/chatroom/${meeting}`)}>
+      <button onClick={() => navigate(`/meetingroom/${meeting}`)}>
         Join Meeting
       </button>
     </>

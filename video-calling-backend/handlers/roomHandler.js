@@ -6,6 +6,32 @@ import mongoose from "mongoose";
 const { ObjectId } = mongoose.Types;
 
 const roomHandler = (socket) => {
+  // check if room exists
+  const checkRoom = async ({ roomId: roomId }) => {
+    if (ObjectId.isValid(roomId)) {
+      const room = await Room.findById(roomId).populate({
+        path: "participants",
+        populate: {
+          path: "user",
+          model: "User",
+        },
+      });
+
+      if (room) {
+        socket.emit("room-exists", {
+          room: room,
+          status: true,
+        });
+        return;
+      }
+    }
+
+    socket.emit("room-exists", {
+      room: null,
+      status: false,
+    });
+  };
+
   // Create a room
   const createRoom = async () => {
     const room = await Room.create({ participants: [] });
@@ -63,7 +89,7 @@ const roomHandler = (socket) => {
         socket.on("ready", () => {
           // from the frontend once someone joins the room we will emit a ready event
           // then from our server we will emit an event to all the clients conn that a new peer has added
-          socket.to(roomId).emit("user-joined", { peerId });
+          socket.to(roomId).emit("user-joined", { peerId, audio, video });
         });
       }
     } else {
@@ -163,6 +189,7 @@ const roomHandler = (socket) => {
     }
   };
 
+  socket.on("check-room", checkRoom);
   socket.on("create-room", createRoom);
   socket.on("joined-room", joinedRoom);
   socket.on("left-room", leftRoom);

@@ -5,7 +5,7 @@ const VideoUser = ({ stream, name }) => {
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
-      videoRef.current.muted = stream.getAudioTracks()[0].enabled;
+      videoRef.current.muted = true;
     }
   }, [stream]);
 

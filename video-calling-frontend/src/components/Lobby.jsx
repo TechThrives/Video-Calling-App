@@ -1,23 +1,26 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSocket } from "../context/SocketContext";
 
-export const CreateMeeting = () => {
-  const { socket, stream, setStream, handleMic, handleVideo, buttonState } =
+const Lobby = ({ roomData, isRoomExist }) => {
+  const { socket, stream, setIsJoined, handleMic, handleVideo, buttonState } =
     useSocket();
   const videoRef = useRef(null);
 
+  useEffect(() => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.muted = true;
+    }
+  }, [stream]);
   const initRoom = () => {
     console.log("Initialising a req to create a room", socket);
     socket.emit("create-room");
   };
 
-  useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.muted = stream.getAudioTracks()[0].enabled;
-    }
-  }, [stream]);
-
+  const joinRoom = () => {
+    console.log("req to join a room");
+    setIsJoined(true);
+  };
   return (
     <>
       <div className="app-wrapper">
@@ -49,11 +52,19 @@ export const CreateMeeting = () => {
             </div>
           </div>
 
-          <button className="btn" onClick={initRoom}>
-            Join Meeting
-          </button>
+          {isRoomExist ? (
+            <button className="btn" onClick={joinRoom}>
+              Join Meeting
+            </button>
+          ) : (
+            <button className="btn" onClick={initRoom}>
+              Create Meeting
+            </button>
+          )}
         </div>
       </div>
     </>
   );
 };
+
+export default Lobby;

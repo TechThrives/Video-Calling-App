@@ -5,15 +5,25 @@ const VideoParticipant = ({ stream, name }) => {
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
-      videoRef.current.muted = stream.getAudioTracks()[0].enabled;
+      videoRef.current.muted = !stream.getAudioTracks()[0].enabled;
     }
   }, [stream]);
 
   return (
     <div className="video-participant">
       <div className="participant-action">
-        <button className="btn-mute"></button>
-        <button className="btn-camera"></button>
+        <button
+          className={`${
+            stream.getAudioTracks()[0].enabled ? "btn-unmute" : "btn-mute"
+          }`}
+        ></button>
+        <button
+          className={`${
+            stream.getVideoTracks()[0].enabled
+              ? "btn-camera-on"
+              : "btn-camera-off"
+          }`}
+        ></button>
       </div>
       <p className="name-tag">{name}</p>
       <video ref={videoRef} autoPlay />
