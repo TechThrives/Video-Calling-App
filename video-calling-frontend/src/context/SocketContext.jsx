@@ -17,13 +17,11 @@ import {
   initialState,
 } from "../reducers/PeerReducer";
 
-const WS_Server = "http://192.168.0.111:5000";
-
 // Create the context
 export const SocketContext = createContext(null);
 
 // Initialize socket connection
-const socket = SocketIoClient(WS_Server, {
+const socket = SocketIoClient(process.env.REACT_APP_SERVER, {
   withCredentials: false,
   transports: ["polling", "websocket"],
 });
@@ -96,9 +94,9 @@ export const SocketProvider = ({ children }) => {
     }
 
     const newPeer = new Peer(userId, {
-      host: "192.168.0.111",
-      port: 9000,
-      path: "/myapp",
+      host: process.env.REACT_APP_PEER_SERVER,
+      port: process.env.REACT_APP_PEER_PORT,
+      path: process.env.REACT_APP_PEER_PATH,
     });
 
     setUser(newPeer);
@@ -125,7 +123,11 @@ export const SocketProvider = ({ children }) => {
       console.log("New room created user", user);
     });
 
-    socket.on("user-joined", ({ peer, audio, video }) => {
+    socket.on("user-joined", async ({ peer, audio, video }) => {
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER}/api/user/${user._id}`
+      );
+      const userData = await response.json();
       navigator.mediaDevices
         .getUserMedia({
           video: true,
@@ -137,7 +139,7 @@ export const SocketProvider = ({ children }) => {
               metadata: {
                 audio: stream.getAudioTracks()[0].enabled,
                 video: stream.getVideoTracks()[0].enabled,
-                name: "KKK",
+                user: userData,
               },
             };
 
@@ -160,10 +162,7 @@ export const SocketProvider = ({ children }) => {
           call.on("stream", (remoteStream) => {
             peerDispatch(
               addPeerAction(
-                {
-                  _id: call.peer,
-                  name: call.metadata.name,
-                },
+                call.metadata.user,
                 remoteStream,
                 call.metadata.audio, // Delayed data in call
                 call.metadata.video

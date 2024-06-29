@@ -1,6 +1,6 @@
-import Room from "../model/room";
-import User from "../model/user";
-import Participant from "../model/participant";
+import Room from "../models/room";
+import User from "../models/user";
+import Participant from "../models/participant";
 import mongoose from "mongoose";
 
 const { ObjectId } = mongoose.Types;
