@@ -133,6 +133,7 @@ const roomHandler = (socket) => {
       });
 
       socket.leave(roomId);
+      socket.disconnect();
     }
   };
 

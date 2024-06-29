@@ -24,6 +24,8 @@ const MeetingRoom = () => {
   } = useSocket();
 
   useEffect(() => {
+    window.addEventListener("beforeunload", handleLeave);
+
     if (user && user._id && stream) {
       console.log("New user ", user._id, "has joined room", roomId);
       const audio = stream.getAudioTracks()[0].enabled;
@@ -35,6 +37,11 @@ const MeetingRoom = () => {
         video: video,
       });
     }
+
+    return () => {
+      window.removeEventListener("beforeunload", handleLeave);
+      socket.off("joined-room");
+    };
   }, [roomId, user, socket, stream]);
 
   useEffect(() => {
@@ -94,8 +101,9 @@ const MeetingRoom = () => {
   };
 
   const handleLeave = () => {
-    setStream(null);
     socket.emit("left-room", { roomId: roomId, peerId: user._id });
+    setUser(null);
+    setStream(null);
     navigate("/");
   };
 
@@ -148,7 +156,7 @@ const MeetingRoom = () => {
               </svg>
             </a>
 
-            <a href="#" className="nav-link icon">
+            <a href="/" className="nav-link icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"

@@ -165,7 +165,7 @@ export const SocketProvider = ({ children }) => {
                   name: call.metadata.name,
                 },
                 remoteStream,
-                call.metadata.audio,
+                call.metadata.audio, // Delayed data in call
                 call.metadata.video
               )
             );

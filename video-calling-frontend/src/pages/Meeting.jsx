@@ -15,9 +15,7 @@ export const Meeting = () => {
   useEffect(() => {
     console.log("Req to check room", roomId);
     socket.emit("check-room", { roomId: roomId });
-  }, []);
 
-  useEffect(() => {
     socket.on("room-exists", ({ room, status }) => {
       console.log("room-exists", room, status);
       if (status) {
@@ -28,6 +26,11 @@ export const Meeting = () => {
         setRoomExist(status);
       }
     });
+
+    return () => {
+      socket.off("check-room");
+      socket.off("room-exists");
+    };
   }, [socket]);
 
   if (!isJoined) {
