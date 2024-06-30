@@ -7,6 +7,7 @@ import cors from "cors";
 import roomHandler from "./handlers/roomHandler";
 import roomRoutes from "./routes/roomRoutes";
 import userRoutes from "./routes/userRoutes";
+import chatHandler from "./handlers/chatHandler";
 
 const app = express();
 
@@ -31,7 +32,8 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log("New user connected");
-  roomHandler(socket); // pass the socket conn to the room handler for room creation and joining
+  roomHandler(socket);
+  chatHandler(socket);
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });

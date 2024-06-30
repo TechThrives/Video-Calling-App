@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [userId, setUserId] = useState("");
   const [meeting, setMeeting] = useState("");
 
   return (
@@ -15,9 +15,9 @@ const Login = () => {
       <input
         type="text"
         placeholder="Enter UsernameId"
-        onChange={(e) => setUsername(e.target.value)}
+        onChange={(e) => setUserId(e.target.value)}
       />
-      <button onClick={() => localStorage.setItem("username", username)}>
+      <button onClick={() => localStorage.setItem("userId", userId)}>
         Login
       </button>
 

@@ -33,6 +33,7 @@ export const SocketProvider = ({ children }) => {
   const [isJoined, setIsJoined] = useState(false);
 
   const [user, setUser] = useState();
+  const [userData, setUserData] = useState();
   const [stream, setStream] = useState(null);
   const [buttonState, setButtonState] = useState({
     mic: true,
@@ -87,11 +88,18 @@ export const SocketProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const userId = localStorage.getItem("username");
-    if (!userId) {
-      navigate("/");
-      return;
-    }
+    const userId = localStorage.getItem("userId");
+    fetch(`${process.env.REACT_APP_SERVER}/api/user/${userId}`)
+      .then((res) =>
+        res.json().then((userData) => {
+          setUserData(userData);
+          if (!userData._id) {
+            navigate("/");
+            return;
+          }
+        })
+      )
+      .catch((err) => console.log(err));
 
     const newPeer = new Peer(userId, {
       host: process.env.REACT_APP_PEER_SERVER,
@@ -110,7 +118,7 @@ export const SocketProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (!user || !stream) return;
+    if (!user || !stream || !userData) return;
 
     socket.on("invalid-request", () => {
       navigate("/");
@@ -123,11 +131,7 @@ export const SocketProvider = ({ children }) => {
       console.log("New room created user", user);
     });
 
-    socket.on("user-joined", async ({ peer, audio, video }) => {
-      const response = await fetch(
-        `${process.env.REACT_APP_SERVER}/api/user/${user._id}`
-      );
-      const userData = await response.json();
+    socket.on("user-joined", ({ peer, audio, video }) => {
       navigator.mediaDevices
         .getUserMedia({
           video: true,
@@ -208,6 +212,8 @@ export const SocketProvider = ({ children }) => {
         socket,
         user,
         setUser,
+        userData,
+        setUserData,
         stream,
         setStream,
         peerItems,

@@ -6,23 +6,27 @@ import mongoose from "mongoose";
 const { ObjectId } = mongoose.Types;
 
 const roomHandler = (socket) => {
-  // check if room exists
-  const checkRoom = async ({ roomId: roomId }) => {
+  // Check if room exists
+  const checkRoom = async ({ roomId }) => {
     if (ObjectId.isValid(roomId)) {
-      const room = await Room.findById(roomId).populate({
-        path: "participants",
-        populate: {
-          path: "user",
-          model: "User",
-        },
-      });
-
-      if (room) {
-        socket.emit("room-exists", {
-          room: room,
-          status: true,
+      try {
+        const room = await Room.findById(roomId).populate({
+          path: "participants",
+          populate: {
+            path: "user",
+            model: "User",
+          },
         });
-        return;
+
+        if (room) {
+          socket.emit("room-exists", {
+            room: room,
+            status: true,
+          });
+          return;
+        }
+      } catch (error) {
+        console.error("Error finding room:", error);
       }
     }
 
@@ -34,116 +38,120 @@ const roomHandler = (socket) => {
 
   // Create a room
   const createRoom = async () => {
-    const room = await Room.create({ participants: [] });
-    console.log("Room created", room);
-    socket.join(room._id);
-    socket.emit("room-created", { roomId: room._id });
+    try {
+      const room = await Room.create({ participants: [] });
+      console.log("Room created", room);
+      socket.join(room._id.toString());
+      socket.emit("room-created", { roomId: room._id });
+    } catch (error) {
+      console.error("Error creating room:", error);
+      socket.emit("error", { message: "Failed to create room" });
+    }
   };
 
-  //new user joins the room
+  // New user joins the room
   const joinedRoom = async ({ roomId, peerId, audio, video }) => {
-    console.log("joined room called", roomId, peerId);
-
     if (ObjectId.isValid(peerId) && ObjectId.isValid(roomId)) {
-      // Find the user by ID
-      const user = await User.findById(peerId);
-
-      // Find the room by ID and populate the participants
-      const room = await Room.findById(roomId).populate({
-        path: "participants",
-        populate: {
-          path: "user",
-          model: "User",
-        },
-      });
-
-      if (user && room) {
-        // Check if the participant is already in the room by checking the user's ID
-        const isParticipantExists = room.participants.some(
-          (participant) =>
-            participant.user &&
-            participant.user._id &&
-            participant.user._id.equals(peerId) // Check participant's user ID
-        );
-
-        if (!isParticipantExists) {
-          // Create a new participant
-          const newParticipant = new Participant({
-            user: peerId,
-          });
-
-          // Save the new participant
-          await newParticipant.save();
-
-          // Add the new participant to the room
-          room.participants.push(newParticipant._id);
-          await room.save(); // Save the room after modification
-        }
-
-        socket.join(roomId); // make the user join the socket room
-        socket.to(roomId).emit("user-joined", { peer: user, audio, video });
-
-        // new user joined and ready to send and receive stream
-        socket.on("ready", () => {
-          // from the frontend once someone joins the room we will emit a ready event
-          // then from our server we will emit an event to all the clients conn that a new peer has added
-          socket.to(roomId).emit("user-joined", { peer: user, audio, video });
+      try {
+        const user = await User.findById(peerId);
+        const room = await Room.findById(roomId).populate({
+          path: "participants",
+          populate: {
+            path: "user",
+            model: "User",
+          },
         });
+
+        if (user && room) {
+          const isParticipantExists = room.participants.some(
+            (participant) =>
+              participant.user &&
+              participant.user._id &&
+              participant.user._id.equals(peerId)
+          );
+
+          if (!isParticipantExists) {
+            const newParticipant = new Participant({
+              user: peerId,
+            });
+
+            await newParticipant.save();
+            room.participants.push(newParticipant._id);
+            await room.save();
+          }
+
+          socket.join(roomId);
+          socket.to(roomId).emit("user-joined", { peer: user, audio, video });
+
+          socket.on("ready", () => {
+            socket.to(roomId).emit("user-joined", { peer: user, audio, video });
+          });
+        } else {
+          socket.emit("invalid-request", { message: "User or room not found" });
+        }
+      } catch (error) {
+        console.error("Error joining room:", error);
+        socket.emit("error", { message: "Failed to join room" });
       }
     } else {
       console.log("Invalid request");
-      socket.emit("invalid-request");
-      return;
+      socket.emit("invalid-request", { message: "Invalid IDs" });
     }
   };
 
   const leftRoom = async ({ roomId, peerId }) => {
     console.log("user left room", roomId, peerId);
 
-    // Find the user by ID
-    const user = await User.findById(peerId);
+    if (ObjectId.isValid(peerId) && ObjectId.isValid(roomId)) {
+      try {
+        const user = await User.findById(peerId);
+        const room = await Room.findById(roomId).populate({
+          path: "participants",
+          populate: {
+            path: "user",
+            model: "User",
+          },
+        });
 
-    const room = await Room.findById(roomId).populate({
-      path: "participants",
-      populate: {
-        path: "user",
-        model: "User",
-      },
-    });
+        if (user && room) {
+          const isParticipantExists = room.participants.some(
+            (participant) =>
+              participant.user &&
+              participant.user._id &&
+              participant.user._id.equals(peerId)
+          );
 
-    if (user && room) {
-      // Check if the participant is already in the room by checking the user's ID
-      const isParticipantExists = room.participants.some(
-        (participant) =>
-          participant.user &&
-          participant.user._id &&
-          participant.user._id.equals(peerId) // Check participant's user ID
-      );
+          if (isParticipantExists) {
+            room.participants = room.participants.filter(
+              (participant) => !participant.user._id.equals(peerId)
+            );
+            await room.save();
+          }
 
-      if (isParticipantExists) {
-        // Remove the participant from the room
-        room.participants = room.participants.filter(
-          (participant) => !participant.user._id.equals(peerId)
-        );
-        await room.save(); // Save the room after modification
+          socket.to(roomId).emit("left-room", {
+            peer: user,
+          });
+
+          socket.leave(roomId);
+          socket.disconnect();
+        } else {
+          socket.emit("invalid-request", { message: "User or room not found" });
+        }
+      } catch (error) {
+        console.error("Error leaving room:", error);
+        socket.emit("error", { message: "Failed to leave room" });
       }
-
-      socket.to(roomId).emit("left-room", {
-        peer: user,
-      });
-
-      socket.leave(roomId);
-      socket.disconnect();
+    } else {
+      console.log("Invalid request");
+      socket.emit("invalid-request", { message: "Invalid IDs" });
     }
   };
 
-  const videoMuted = async ({ roomId, peerId, video }) => {
-    // Emit the video-mute event to other clients in the room
+  const videoMuted = ({ roomId, peerId, video }) => {
     socket.to(roomId).emit("video-mute", { peerId, video });
   };
 
-  const audioMuted = async ({ roomId, peerId, audio }) => {
-    // Emit the video-mute event to other clients in the room
+  const audioMuted = ({ roomId, peerId, audio }) => {
     socket.to(roomId).emit("audio-mute", { peerId, audio });
   };
 
