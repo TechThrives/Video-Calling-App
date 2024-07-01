@@ -126,6 +126,7 @@ export const SocketProvider = ({ children }) => {
 
     // we will transfer the user to the room page when we collect an event of room-created from server
     socket.on("room-created", ({ roomId }) => {
+      console.log("New room created", roomId);
       navigate(`/meetingroom/${roomId}`);
       setIsJoined(true);
       console.log("New room created user", user);
@@ -204,7 +205,7 @@ export const SocketProvider = ({ children }) => {
       socket.off("video-mute");
       socket.off("audio-mute");
     };
-  }, [stream, user]);
+  }, [stream, user, userData]);
 
   return (
     <SocketContext.Provider

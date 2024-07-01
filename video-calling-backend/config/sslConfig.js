@@ -3,16 +3,16 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 
-const keyStream = path.resolve(`../credentials/${process.env.KEY}`);
-const certificateStream = path.resolve(`../credentials/${process.env.CERT}`);
-const privateKey = fs.readFileSync(keyStream, "utf8");
+const certificateStream = path.resolve(process.env.SSL_CRT_FILE);
+const keyStream = path.resolve(process.env.SSL_KEY_FILE);
+
 const certificate = fs.readFileSync(certificateStream, "utf8");
-const credentials = {
-  key: privateKey,
+const privateKey = fs.readFileSync(keyStream, "utf8");
+
+const sslConfig = {
   cert: certificate,
+  key: privateKey,
   passphrase: process.env.PASSPHRASE,
 };
-
-const sslConfig = { credentials };
 
 export default sslConfig;

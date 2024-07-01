@@ -4,12 +4,14 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Meeting from "./pages/Meeting";
 import { SocketProvider } from "./context/SocketContext";
+import Register from "./pages/Register";
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Home />} />
         <Route
           path="/meetingroom/:roomId"

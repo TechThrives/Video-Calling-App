@@ -40,9 +40,8 @@ const roomHandler = (socket) => {
   const createRoom = async () => {
     try {
       const room = await Room.create({ participants: [] });
-      console.log("Room created", room);
-      socket.join(room._id.toString());
-      socket.emit("room-created", { roomId: room._id });
+      console.log("Room created", room._id.toString());
+      socket.emit("room-created", { roomId: room._id.toString() });
     } catch (error) {
       console.error("Error creating room:", error);
       socket.emit("error", { message: "Failed to create room" });

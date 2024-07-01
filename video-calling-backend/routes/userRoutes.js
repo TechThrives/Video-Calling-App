@@ -1,14 +1,13 @@
-import Room from "../models/room";
 import User from "../models/user";
-import Participant from "../models/participant";
 import express from "express";
 import mongoose from "mongoose";
+import authMiddleware from "../middleware/authMiddleware";
 
 const { ObjectId } = mongoose.Types;
 
 const router = express.Router();
 
-router.get("/user/:userId", async (req, res) => {
+router.get("/user/:userId", authMiddleware, async (req, res) => {
   const { userId } = req.params;
 
   if (ObjectId.isValid(userId)) {

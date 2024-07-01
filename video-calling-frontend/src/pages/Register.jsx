@@ -1,32 +1,28 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 
-const Login = () => {
-  const [userLogin, setUserLogin] = useState({
+const Register = () => {
+  const [userRegister, setUserRegister] = useState({
+    name: "",
     email: "",
     password: "",
   });
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setUserLogin({ ...userLogin, [e.target.name]: e.target.value });
+    setUserRegister({ ...userRegister, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = (e) => {
+  const handleRegister = (e) => {
     try {
-      fetch(`${process.env.REACT_APP_SERVER}/api/auth/login`, {
+      fetch(`${process.env.REACT_APP_SERVER}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(userLogin),
-        credentials: "include",
+        body: JSON.stringify(userRegister),
       })
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          console.log(Cookies.get("userId"));
         });
     } catch (err) {
       console.log(err);
@@ -36,14 +32,24 @@ const Login = () => {
   return (
     <>
       <div class="app-main">
-        <div class="sign-in">
-          <h2>Login</h2>
+        <div class="sign-up">
+          <h2>Sign Up</h2>
+          <div class="input-group">
+            <input
+              type="text"
+              onChange={handleChange}
+              name="name"
+              value={userRegister.name}
+              required
+            />
+            <label for="">Name</label>
+          </div>
           <div class="input-group">
             <input
               type="text"
               onChange={handleChange}
               name="email"
-              value={userLogin.email}
+              value={userRegister.email}
               required
             />
             <label for="">Email</label>
@@ -53,23 +59,19 @@ const Login = () => {
               type="password"
               onChange={handleChange}
               name="password"
-              value={userLogin.password}
+              value={userRegister.password}
               required
             />
             <label for="">Password</label>
           </div>
-          <div class="forgot-pass">
-            <a href="#">Forgot Password?</a>
-          </div>
-          <button type="submit" onClick={handleLogin} class="btn">
-            Login
+          <button type="submit" onClick={handleRegister} class="btn">
+            Sign Up
           </button>
-
           <div class="sign-link">
             <p>
-              Don't have an account?{" "}
-              <a href="/register" class="signUp-link">
-                Sign Up
+              Already have an account?{" "}
+              <a href="/login" class="signIn-link">
+                Sign In
               </a>
             </p>
           </div>
@@ -79,4 +81,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

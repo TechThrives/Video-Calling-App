@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Lobby from "../components/Lobby";
 import { useSocket } from "../context/SocketContext";
 import { useNavigate, useParams } from "react-router-dom";
-import MeetingRoom from "./MeetingRoom";
+import MeetingRoom from "../components/MeetingRoom";
 
 export const Meeting = () => {
   const [roomData, setRoomData] = useState(null);

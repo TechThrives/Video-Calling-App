@@ -22,7 +22,7 @@ const Lobby = ({ roomData, isRoomExist }) => {
   };
   return (
     <>
-      <div className="app-wrapper">
+      <div className="app-main">
         <div className="create-meet">
           <div className="meet-info">
             <h2>We are Creative Tech Enthusiast working since 2015</h2>

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSocket } from "../context/SocketContext";
-import VideoParticipant from "../components/VideoParticipant";
-import VideoUser from "../components/VideoUser";
-import Chat from "../components/Chat";
-import Participants from "../components/Participants";
+import VideoParticipant from "./VideoParticipant";
+import VideoUser from "./VideoUser";
+import Chat from "./Chat";
+import Participants from "./Participants";
 
 const MeetingRoom = () => {
   const navigate = useNavigate();
