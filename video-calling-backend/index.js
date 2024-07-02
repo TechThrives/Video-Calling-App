@@ -24,21 +24,16 @@ const corsOptions = {
   origin: process.env.FRONTEND_URL,
 };
 
-app.use(express.json());
-app.use(cookieParser());
-app.use(cors(corsOptions));
-
-// Routes
-app.use("/api", roomRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api", userRoutes);
+console.log(process.env.FRONTEND_URL);
 
 const server = https.createServer(sslConfig, app);
 
+// Socket.io setup
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
@@ -51,12 +46,21 @@ io.on("connection", (socket) => {
   });
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors(corsOptions));
+
+// Routes
+app.use("/api", roomRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api", userRoutes);
 
 server.listen(serverConfig.PORT, () => {
   console.log(`Server is up at port ${serverConfig.PORT}`);
+});
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
 
 //peerjs --port 9000 --key peerjs --path /myapp

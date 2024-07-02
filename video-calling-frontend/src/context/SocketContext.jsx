@@ -16,13 +16,14 @@ import {
   peerReducer,
   initialState,
 } from "../reducers/PeerReducer";
+import fetchService from "../services/fetchService";
 
 // Create the context
 export const SocketContext = createContext(null);
 
 // Initialize socket connection
 const socket = SocketIoClient(process.env.REACT_APP_SERVER, {
-  withCredentials: false,
+  withCredentials: true,
   transports: ["polling", "websocket"],
 });
 
@@ -87,21 +88,16 @@ export const SocketProvider = ({ children }) => {
     }));
   };
 
-  useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    fetch(`${process.env.REACT_APP_SERVER}/api/user/${userId}`)
-      .then((res) =>
-        res.json().then((userData) => {
-          setUserData(userData);
-          if (!userData._id) {
-            navigate("/");
-            return;
-          }
-        })
-      )
-      .catch((err) => console.log(err));
+  useEffect(async () => {
+    const url = "/api/user";
+    const options = {
+      credentials: "include",
+    };
 
-    const newPeer = new Peer(userId, {
+    const data = await fetchService(url, options);
+    setUserData(data);
+
+    const newPeer = new Peer(data._id, {
       host: process.env.REACT_APP_PEER_SERVER,
       port: process.env.REACT_APP_PEER_PORT,
       path: process.env.REACT_APP_PEER_PATH,

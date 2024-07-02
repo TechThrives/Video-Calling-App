@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import fetchService from "../services/fetchService";
 
 const Register = () => {
   const [userRegister, setUserRegister] = useState({
@@ -11,30 +12,25 @@ const Register = () => {
     setUserRegister({ ...userRegister, [e.target.name]: e.target.value });
   };
 
-  const handleRegister = (e) => {
-    try {
-      fetch(`${process.env.REACT_APP_SERVER}/api/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userRegister),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-        });
-    } catch (err) {
-      console.log(err);
-    }
+  const handleRegister = async (e) => {
+    const url = "/api/auth/register";
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userRegister),
+    };
+
+    await fetchService(url, options);
   };
 
   return (
     <>
-      <div class="app-main">
-        <div class="sign-up">
+      <div className="app-main">
+        <div className="sign-up">
           <h2>Sign Up</h2>
-          <div class="input-group">
+          <div className="input-group">
             <input
               type="text"
               onChange={handleChange}
@@ -42,9 +38,9 @@ const Register = () => {
               value={userRegister.name}
               required
             />
-            <label for="">Name</label>
+            <label htmlFor="">Name</label>
           </div>
-          <div class="input-group">
+          <div className="input-group">
             <input
               type="text"
               onChange={handleChange}
@@ -52,9 +48,9 @@ const Register = () => {
               value={userRegister.email}
               required
             />
-            <label for="">Email</label>
+            <label htmlFor="">Email</label>
           </div>
-          <div class="input-group">
+          <div className="input-group">
             <input
               type="password"
               onChange={handleChange}
@@ -62,15 +58,15 @@ const Register = () => {
               value={userRegister.password}
               required
             />
-            <label for="">Password</label>
+            <label htmlFor="">Password</label>
           </div>
-          <button type="submit" onClick={handleRegister} class="btn">
+          <button type="submit" onClick={handleRegister} className="btn">
             Sign Up
           </button>
-          <div class="sign-link">
+          <div className="sign-link">
             <p>
               Already have an account?{" "}
-              <a href="/login" class="signIn-link">
+              <a href="/login" className="signIn-link">
                 Sign In
               </a>
             </p>

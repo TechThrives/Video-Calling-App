@@ -9,7 +9,7 @@
 /* Heading text */
 h2 {
   font-size: 30px;
-  color: #1e2022;
+  color: var(--font-color);
   text-align: center;
 }
 /* Input text */
@@ -25,7 +25,7 @@ h2 {
   left: 5px;
   transform: translateY(-50%);
   font-size: 16px;
-  color: #1e2022;
+  color: var(--font-color);
   padding: 0 5px;
   pointer-events: none;
   transition: 0.5s;
@@ -37,9 +37,10 @@ h2 {
   font-size: 16px;
   padding: 0 10px;
   background: transparent;
-  border: 1px solid #1e2022;
+  border: 1px solid var(--message-text);
   outline: none;
   border-radius: 5px;
+  color: var(--font-color);
 }
 /* Input label color */
 .input-group input:focus ~ label,
@@ -54,7 +55,7 @@ h2 {
 }
 /* Forgot password text */
 .forgot-pass a {
-  color: #1e2022;
+  color: var(--message-text);
   font-size: 14px;
   text-decoration: none;
 }
@@ -70,7 +71,7 @@ h2 {
 }
 /* Sign link text */
 .sign-link p {
-  color: #1e2022;
+  color: var(--message-text);
 }
 
 .sign-link p a {

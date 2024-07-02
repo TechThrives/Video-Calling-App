@@ -62,26 +62,16 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+    const token = jwt.sign({ _id: user._id, email }, JWT_SECRET, {
       expiresIn: "1h",
     });
 
     res.cookie("token", token, {
       httpOnly: true,
-      signed: true,
-      sameSite: "None",
+      secure: true,
+      sameSite: "strict",
       maxAge: 3600000, // 1 hour
     });
-
-    res.cookie("userId", user._id.toString(), {
-      httpOnly: true,
-      signed: true,
-      sameSite: "None",
-      maxAge: 3600000, // 1 hour
-    });
-
-    req.signedCookies.title = "Gourav";
-    req.signedCookies.age = 12;
 
     res.status(200).json({
       message: "Login successful",
@@ -89,6 +79,20 @@ router.post("/login", async (req, res) => {
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/check", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const user = jwt.verify(token, JWT_SECRET);
+    res.status(200).json({
+      _id: user._id,
+    });
+  } catch (err) {
+    res.status(401).json({ message: "Unauthorized" });
   }
 });
 

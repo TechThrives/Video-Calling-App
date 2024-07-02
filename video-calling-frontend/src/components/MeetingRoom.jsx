@@ -8,7 +8,6 @@ import Participants from "./Participants";
 
 const MeetingRoom = () => {
   const navigate = useNavigate();
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [isRightSideVisible, setIsRightSideVisible] = useState(false);
 
   const { roomId } = useParams();
@@ -45,22 +44,6 @@ const MeetingRoom = () => {
       socket.off("joined-room");
     };
   }, [roomId, user, socket, stream]);
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
-    }
-
-    return () => {
-      document.body.classList.remove("dark"); // Clean up on component unmount
-    };
-  }, [isDarkMode]);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode((prevMode) => !prevMode);
-  };
 
   const closeRightSide = () => {
     setIsRightSideVisible(false);
@@ -112,34 +95,6 @@ const MeetingRoom = () => {
   return (
     <>
       <div className="app-container">
-        <button className="mode-switch" onClick={toggleDarkMode}>
-          <svg
-            className="sun feather feather-sun"
-            fill="none"
-            stroke="#fbb046"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <defs />
-            <circle cx="12" cy="12" r="5" />
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-          </svg>
-
-          <svg
-            className="moon feather feather-moon"
-            fill="none"
-            stroke="#ffffff"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <defs />
-            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-          </svg>
-        </button>
         <div className={`left-side`}>
           <div className="navigation">
             <a href="#" className="nav-link icon">
