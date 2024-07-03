@@ -118,10 +118,6 @@ export const SocketProvider = ({ children }) => {
 
       fetchUserFeed();
     });
-
-    return () => {
-      stream?.getTracks().forEach((track) => track.stop());
-    };
   }, []);
 
   useEffect(() => {
@@ -140,53 +136,35 @@ export const SocketProvider = ({ children }) => {
     });
 
     socket.on("user-joined", ({ peer, audio, video }) => {
-      navigator.mediaDevices
-        .getUserMedia({
-          video: true,
-          audio: true,
-        })
-        .then(
-          (userstream) => {
-            const options = {
-              metadata: {
-                audio: stream.getAudioTracks()[0].enabled,
-                video: stream.getVideoTracks()[0].enabled,
-                user: userData,
-              },
-            };
+      const options = {
+        metadata: {
+          audio: stream.getAudioTracks()[0].enabled,
+          video: stream.getVideoTracks()[0].enabled,
+          user: userData,
+        },
+      };
 
-            const call = user.call(peer._id, userstream, options);
-            call.on("stream", (peerStream) => {
-              peerDispatch(addPeerAction(peer, peerStream, audio, video));
-              joinSound();
-            });
-          },
-          (err) => {
-            console.log("Failed to get local stream", err);
-          }
-        );
+      const call = user.call(peer._id, stream, options);
+      call.on("stream", (peerStream) => {
+        peerDispatch(addPeerAction(peer, peerStream, audio, video));
+        joinSound();
+      });
     });
 
     user.on("call", (call) => {
       console.log("Received call", call);
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(
-        (userstream) => {
-          call.answer(userstream);
-          call.on("stream", (remoteStream) => {
-            peerDispatch(
-              addPeerAction(
-                call.metadata.user,
-                remoteStream,
-                call.metadata.audio, // Delayed data in call
-                call.metadata.video
-              )
-            );
-          });
-        },
-        (err) => {
-          console.log("Failed to get local stream", err);
-        }
-      );
+
+      call.answer(stream);
+      call.on("stream", (remoteStream) => {
+        peerDispatch(
+          addPeerAction(
+            call.metadata.user,
+            remoteStream,
+            call.metadata.audio, // Delayed data in call
+            call.metadata.video
+          )
+        );
+      });
     });
 
     socket.on("left-room", ({ peer }) => {
@@ -213,8 +191,13 @@ export const SocketProvider = ({ children }) => {
       socket.off("invalid-request");
       socket.off("video-mute");
       socket.off("audio-mute");
+
+      stream.getTracks().forEach((track) => {
+        track.stop();
+        stream.removeTrack(track);
+      });
     };
-  }, [stream, user, userData]);
+  }, [stream, socket, user, userData]);
 
   return (
     <SocketContext.Provider
