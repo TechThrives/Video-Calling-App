@@ -12,6 +12,7 @@ const Lobby = ({ roomData, isRoomExist }) => {
       videoRef.current.muted = true;
     }
   }, [stream]);
+
   const initRoom = () => {
     console.log("Initialising a req to create a room", socket);
     socket.emit("create-room");
@@ -33,7 +34,8 @@ const Lobby = ({ roomData, isRoomExist }) => {
           </div>
           <div className="meet-video">
             <div className="video-own">
-              <video ref={videoRef} muted autoPlay></video>
+              <video ref={videoRef} autoPlay></video>
+
               <div className="video-call-actions">
                 <button
                   className={`video-action-button mic ${

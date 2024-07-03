@@ -20,9 +20,17 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
-          <Route element={<PrivateRoute />}>
+          <Route path="/meeting" element={<PrivateRoute />}>
             <Route
-              path="/meetingroom/:roomId"
+              path=":roomId"
+              element={
+                <SocketProvider>
+                  <Meeting />
+                </SocketProvider>
+              }
+            />
+            <Route
+              index
               element={
                 <SocketProvider>
                   <Meeting />

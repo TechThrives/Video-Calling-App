@@ -7,7 +7,6 @@ const PrivateRoute = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      console.log("Checking auth...");
       try {
         const response = await fetch(
           `${process.env.REACT_APP_SERVER}/api/auth/check`,
@@ -15,22 +14,25 @@ const PrivateRoute = () => {
             credentials: "include",
           }
         );
+
         if (response.ok) {
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
         }
       } catch (error) {
+        console.error("Error checking authentication:", error);
         setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }
     };
+
     checkAuth();
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading authentication status...</div>;
   }
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;

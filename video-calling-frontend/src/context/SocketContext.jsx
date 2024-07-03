@@ -18,6 +18,12 @@ import {
 } from "../reducers/PeerReducer";
 import fetchService from "../services/fetchService";
 
+//Sound Effects
+import useSound from "use-sound";
+import joinSfx from "../sounds/join.mp3";
+import leftSfx from "../sounds/left.mp3";
+import { notify } from "../services/toastService";
+
 // Create the context
 export const SocketContext = createContext(null);
 
@@ -41,6 +47,10 @@ export const SocketProvider = ({ children }) => {
     video: true,
     fullscreen: false,
   });
+
+  //Sound effects
+  const [joinSound] = useSound(joinSfx);
+  const [leftSound] = useSound(leftSfx);
 
   const fetchUserFeed = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -88,42 +98,43 @@ export const SocketProvider = ({ children }) => {
     }));
   };
 
-  useEffect(async () => {
+  useEffect(() => {
     const url = "/api/user";
     const options = {
       credentials: "include",
     };
 
-    const data = await fetchService(url, options);
-    setUserData(data);
+    fetchService(url, options).then((response) => {
+      setUserData(response);
+      console.log("response", response);
+      const newPeer = new Peer(response._id, {
+        host: process.env.REACT_APP_PEER_SERVER,
+        port: process.env.REACT_APP_PEER_PORT,
+        path: process.env.REACT_APP_PEER_PATH,
+        secure: true,
+      });
 
-    const newPeer = new Peer(data._id, {
-      host: process.env.REACT_APP_PEER_SERVER,
-      port: process.env.REACT_APP_PEER_PORT,
-      path: process.env.REACT_APP_PEER_PATH,
+      setUser(newPeer);
+
+      fetchUserFeed();
     });
-
-    setUser(newPeer);
-
-    fetchUserFeed();
 
     return () => {
       stream?.getTracks().forEach((track) => track.stop());
-      newPeer.destroy();
     };
   }, []);
 
   useEffect(() => {
     if (!user || !stream || !userData) return;
 
-    socket.on("invalid-request", () => {
-      navigate("/");
+    socket.on("invalid-request", ({ message }) => {
+      notify(400, message);
     });
 
     // we will transfer the user to the room page when we collect an event of room-created from server
     socket.on("room-created", ({ roomId }) => {
       console.log("New room created", roomId);
-      navigate(`/meetingroom/${roomId}`);
+      navigate(`/meeting/${roomId}`);
       setIsJoined(true);
       console.log("New room created user", user);
     });
@@ -147,6 +158,7 @@ export const SocketProvider = ({ children }) => {
             const call = user.call(peer._id, userstream, options);
             call.on("stream", (peerStream) => {
               peerDispatch(addPeerAction(peer, peerStream, audio, video));
+              joinSound();
             });
           },
           (err) => {
@@ -180,6 +192,7 @@ export const SocketProvider = ({ children }) => {
     socket.on("left-room", ({ peer }) => {
       console.log("User disconnected", peer);
       peerDispatch(removePeerAction(peer));
+      leftSound();
     });
 
     socket.on("video-mute", ({ peerId, video }) => {

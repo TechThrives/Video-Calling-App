@@ -24,7 +24,7 @@ const Login = () => {
       credentials: "include",
     };
     if (await fetchService(url, options)) {
-      navigate("/meetingroom/:roomId");
+      navigate("/meeting/:roomId");
     }
   };
 
