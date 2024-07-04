@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import fetchService from "../services/fetchService";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
   const [userLogin, setUserLogin] = useState({
     email: "",
     password: "",
@@ -24,11 +26,14 @@ const Login = () => {
       credentials: "include",
     };
     if (await fetchService(url, options)) {
-      navigate("/meeting/:roomId");
+      setIsAuthenticated(true);
+      navigate("/meeting");
     }
   };
 
-  return (
+  return isAuthenticated ? (
+    <Navigate to="/meeting" />
+  ) : (
     <>
       <div className="app-main">
         <div className="sign-in">

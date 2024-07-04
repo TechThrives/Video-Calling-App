@@ -26,11 +26,11 @@ const Lobby = ({ roomData, isRoomExist }) => {
       <div className="app-main">
         <div className="create-meet">
           <div className="meet-info">
-            <h2>We are Creative Tech Enthusiast working since 2015</h2>
-            <div className="text">
+            <h4>We are Creative Tech Enthusiast working since 2015</h4>
+            <p className="text">
               I am Rahul Yaduvanshi works at Css3 Transition since last 3 years.
               We are here to provide touch notch solution for your website or
-            </div>
+            </p>
           </div>
           <div className="meet-video">
             <div className="video-own">

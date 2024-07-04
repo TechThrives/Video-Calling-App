@@ -1,35 +1,33 @@
 import React, { useEffect, useRef } from "react";
 
-const VideoParticipant = ({ stream, user }) => {
+const VideoParticipant = ({ data }) => {
   const videoRef = useRef(null);
   useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.muted = !stream.getAudioTracks()[0].enabled;
+    if (videoRef.current && data.peerStream) {
+      videoRef.current.srcObject = data.peerStream;
+      videoRef.current.muted = !data.peerStream.getAudioTracks()[0].enabled;
     }
-  }, [
-    stream,
-    stream.getAudioTracks()[0].enabled,
-    stream.getVideoTracks()[0].enabled,
-  ]);
+  }, [data.peerStream]);
 
   return (
     <div className="video-participant">
       <div className="participant-action">
         <button
           className={`${
-            stream.getAudioTracks()[0].enabled ? "btn-unmute" : "btn-mute"
+            data.peerStream.getAudioTracks()[0].enabled
+              ? "btn-unmute"
+              : "btn-mute"
           }`}
         ></button>
         <button
           className={`${
-            stream.getVideoTracks()[0].enabled
+            data.peerStream.getVideoTracks()[0].enabled
               ? "btn-camera-on"
               : "btn-camera-off"
           }`}
         ></button>
       </div>
-      <p className="name-tag">{user.name}</p>
+      <p className="name-tag">{data.user.name}</p>
       <video ref={videoRef} autoPlay />
     </div>
   );

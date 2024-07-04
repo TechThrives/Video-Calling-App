@@ -216,15 +216,8 @@ const MeetingRoom = () => {
           <VideoUser stream={stream} />
           <div className="video-call-wrapper">
             {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant
-                key={peerId}
-                stream={peerItems[peerId].peerStream}
-                user={peerItems[peerId].user}
-              />
+              <VideoParticipant key={peerId} data={peerItems[peerId]} />
             ))}
-            {/* {Array.from("ABCDEFG").map((peerId) => (
-              <VideoParticipant key={peerId} stream={stream} />
-            ))} */}
           </div>
 
           <div className="video-call-actions">

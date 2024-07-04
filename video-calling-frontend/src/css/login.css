@@ -6,12 +6,6 @@
   height: 100%;
 }
 
-/* Heading text */
-h2 {
-  font-size: 30px;
-  color: var(--font-color);
-  text-align: center;
-}
 /* Input text */
 .input-group {
   position: relative;

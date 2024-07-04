@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import fetchService from "../services/fetchService";
+import { useAuth } from "../context/AuthContext";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const { isAuthenticated } = useAuth();
   const [userRegister, setUserRegister] = useState({
     name: "",
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setUserRegister({ ...userRegister, [e.target.name]: e.target.value });
@@ -22,10 +26,14 @@ const Register = () => {
       body: JSON.stringify(userRegister),
     };
 
-    await fetchService(url, options);
+    if (await fetchService(url, options)) {
+      navigate("/login");
+    }
   };
 
-  return (
+  return isAuthenticated ? (
+    <Navigate to="/meeting" />
+  ) : (
     <>
       <div className="app-main">
         <div className="sign-up">
