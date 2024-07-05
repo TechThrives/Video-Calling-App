@@ -10,6 +10,7 @@ import Meeting from "./pages/Meeting";
 import Register from "./pages/Register";
 import PrivateRoute from "./utils/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
+import Welcome from "./pages/Welcome";
 
 const App = () => {
   return (
@@ -23,6 +24,8 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/meeting" element={<PrivateRoute />}>
+              <Route path="welcome" element={<Welcome />} />
+
               <Route
                 path=":roomId"
                 element={

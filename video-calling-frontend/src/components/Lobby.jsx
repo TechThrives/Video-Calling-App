@@ -53,15 +53,17 @@ const Lobby = ({ roomData, isRoomExist }) => {
             </div>
           </div>
 
-          {isRoomExist ? (
-            <button className="btn" onClick={joinRoom}>
-              Join Meeting
-            </button>
-          ) : (
-            <button className="btn" onClick={initRoom}>
-              Create Meeting
-            </button>
-          )}
+          <div className="lobby-btn">
+            {isRoomExist ? (
+              <button className="btn" onClick={joinRoom}>
+                Join Meeting
+              </button>
+            ) : (
+              <button className="btn" onClick={initRoom}>
+                Create Meeting
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </>

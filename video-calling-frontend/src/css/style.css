@@ -32,10 +32,9 @@ button:hover {
   border-radius: 5px;
   border: none;
   outline: none;
-  margin-top: 10px;
 }
 .btn:hover {
-  background-color: #222222;
+  background-color: var(--hover-color);
   opacity: 1;
 }
 a {
@@ -45,6 +44,7 @@ a {
 
 body {
   --font-color: #242424;
+  --hover-color: #2b31e0;
   --app-background: #f0f5f9;
   --chat-background: #fff;
   --link-color: #c0c1c5;
@@ -62,6 +62,7 @@ body {
 
 body.dark {
   --font-color: #f0f5f9;
+  --hover-color: #3c42f7;
   --app-background: #262a42;
   --navigation-box-shadow: 0px 0px 8px 0px #282b33;
   --chat-background: #3c3f56;
@@ -650,6 +651,10 @@ body.dark .btn-close-right {
   display: flex;
   justify-content: space-between;
   gap: 5px;
+}
+
+.lobby-btn{
+  margin-top: 20px;
 }
 
 /*==================== MEDIA QUERIES ====================*/

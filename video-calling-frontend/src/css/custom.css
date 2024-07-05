@@ -1,0 +1,99 @@
+.meeting-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+.meeting-left {
+    flex: 1;
+    padding: 30px;
+}
+
+.meeting-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.meeting-content {
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.meeting-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+
+.join-div {
+    display: flex;
+    right: 20px;
+    position: relative;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.join-meeting {
+    display: flex;
+    margin-right: 10px;
+    align-items: center;
+    margin-left: 120px;
+    width: 140px;
+    justify-items: end;
+}
+
+.btn-join {
+    background-color: #007bff;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.btn-join:hover {
+    background-color: #0056b3;
+}
+
+.help-text {
+    font-size: 14px;
+    color: #666;
+}
+
+.help-text a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.help-text a:hover {
+    color: #0056b3;
+}
+
+.meeting-right img {
+    max-width: 80%;
+    border-radius: 8px;
+}
+
+/*===================Media Queries====================*/
+@media screen and (max-width: 900px) {
+    .meeting-page{
+        flex-direction: column;
+    }
+
+        .meeting-right img {
+            max-width: 40%;
+        }
+}
