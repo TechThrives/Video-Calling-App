@@ -132,7 +132,6 @@ const roomHandler = (socket) => {
           });
 
           socket.leave(roomId);
-          socket.disconnect();
         } else {
           socket.emit("invalid-request", { message: "User or room not found" });
         }

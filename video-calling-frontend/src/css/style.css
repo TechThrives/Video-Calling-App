@@ -121,17 +121,18 @@ body.dark .btn-close-right {
   margin-top: 20px;
 }
 .nav-link:hover svg {
-  color: #3d42df;
+  color: var(--main-color);
 }
 .icon svg {
   width: 22px;
   height: 22px;
+  cursor: pointer;
   color: var(--link-color);
   transition: 0.2s ease-in;
 }
 .right-side {
   margin-left: auto;
-  flex-basis: 400px;
+  flex-basis: 350px;
   height: 100%;
   padding: 16px;
   position: relative;
@@ -149,7 +150,7 @@ body.dark .btn-close-right {
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  height: calc(100% - 72px);
+  height: 100%;
 }
 .chat-header {
   padding: 16px;
@@ -171,6 +172,7 @@ body.dark .btn-close-right {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
+  padding-top: 25px;
 }
 .profile-picture {
   border-radius: 8px;
@@ -516,10 +518,15 @@ body.dark .btn-close-right {
   min-width: 32px;
 }
 
+.video-user-container {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+}
+
 .user-div {
-  position: absolute;
-  bottom: 50px;
-  right: 50px;
+  position: relative;
+  bottom: 60px;
   z-index: 1;
 }
 
@@ -586,23 +593,7 @@ body.dark .btn-close-right {
   opacity: 0;
   width: 0;
 }
-.expand-btn {
-  position: absolute;
-  right: 32px;
-  top: 24px;
-  border: none;
-  background-color: var(--chat-background);
-  border-radius: 4px;
-  color: var(--message-text);
-  width: 40px;
-  height: 40px;
-  justify-content: center;
-  align-items: center;
-  display: none;
-}
-.expand-btn.show {
-  display: flex;
-}
+
 .btn-close-right {
   border: none;
   background-color: transparent;
@@ -666,13 +657,11 @@ body.dark .btn-close-right {
 /*==================== Devices smaller than 900px ====================*/
 
 @media screen and (max-width: 900px) {
-  .expand-btn {
-    display: block;
-  }
   .right-side {
     position: absolute;
     right: 0;
     background-color: var(--chat-background);
+    min-width: 330px;
     transform: translateX(100%);
     z-index: 2;
     height: 100%;
@@ -693,25 +682,12 @@ body.dark .btn-close-right {
   .app-main {
     padding: 72px 16px 16px 16px;
   }
-  .expand-btn {
-    right: 16px;
-  }
+
   .mode-switch {
     left: 16px;
   }
   .video-call-actions {
     padding-top: 32px;
-  }
-  .video-action-button {
-    width: 32px;
-    height: 32px;
-    background-size: 14px;
-    margin: 0 4px;
-  }
-  .video-action-button.endcall {
-    background-size: 14px;
-    font-size: 12px;
-    padding-left: 36px;
   }
   .video-action-button.magnifier svg {
     width: 14px;
@@ -793,21 +769,4 @@ body.dark .btn-close-right {
 /* width */
 ::-webkit-scrollbar {
   width: 2px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f50808;
-  border-radius: 2px;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #0a8028;
-  border-radius: 2px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #450aa3;
 }

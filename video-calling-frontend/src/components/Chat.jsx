@@ -27,6 +27,12 @@ const Chat = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  };
+
   useEffect(() => {
     // Request initial messages
     socket.emit("request-messages", { roomId });
@@ -34,7 +40,6 @@ const Chat = () => {
     // Handle incoming messages
     socket.on("get-messages", ({ messages }) => {
       setMessages(messages);
-      scrollToBottom();
     });
 
     // Cleanup on unmount
@@ -42,6 +47,10 @@ const Chat = () => {
       socket.off("get-messages");
     };
   }, [socket, roomId]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <div className="chat-container">
@@ -62,6 +71,7 @@ const Chat = () => {
             className="chat-input"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
           />
           <button className="send-button" onClick={sendMessage}>
             <svg
