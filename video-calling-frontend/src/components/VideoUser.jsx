@@ -12,8 +12,14 @@ const VideoUser = ({ stream, name }) => {
 
   return (
     <div className="user-div">
-      <div className="video-user">
+      <div className="user-video">
         <video ref={videoRef} autoPlay />
+        <img
+          src="https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg"
+          className={`${
+            stream && stream.getVideoTracks()[0].enabled ? "" : "show"
+          }`}
+        />
       </div>
     </div>
   );

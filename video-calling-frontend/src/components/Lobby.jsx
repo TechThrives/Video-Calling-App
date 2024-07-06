@@ -24,17 +24,23 @@ const Lobby = ({ roomData, isRoomExist }) => {
   return (
     <>
       <div className="app-main">
-        <div className="create-meet">
-          <div className="meet-info">
+        <div className="lobby-meet">
+          <div className="lobby-info">
             <h4>We are Creative Tech Enthusiast working since 2015</h4>
             <p className="text">
               I am Rahul Yaduvanshi works at Css3 Transition since last 3 years.
               We are here to provide touch notch solution for your website or
             </p>
           </div>
-          <div className="meet-video">
-            <div className="video-own">
+          <div className="lobby-video">
+            <div className="lobby-own">
               <video ref={videoRef} autoPlay></video>
+              <img
+                src="https://images.unsplash.com/photo-1576110397661-64a019d88a98?ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80"
+                className={`${
+                  stream && stream.getVideoTracks()[0].enabled ? "" : "show"
+                }`}
+              />
 
               <div className="video-call-actions">
                 <button

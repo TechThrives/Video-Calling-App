@@ -53,7 +53,8 @@ const Chat = () => {
   }, [messages]);
 
   return (
-    <div className="chat-container">
+    <div className="right-container">
+      <h3>Chat</h3>
       <div className="chat-area" id="chat-area">
         {messages.map((message) => (
           <Message

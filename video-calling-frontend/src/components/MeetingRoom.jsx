@@ -4,11 +4,15 @@ import { useSocket } from "../context/SocketContext";
 import VideoParticipant from "./VideoParticipant";
 import VideoUser from "./VideoUser";
 import Chat from "./Chat";
-import Participants from "./Participants";
+import ParticipantList from "./ParticipantList";
 
 const MeetingRoom = () => {
   const navigate = useNavigate();
-  const [isRightSideVisible, setIsRightSideVisible] = useState(false);
+  const [isRightSideVisible, setIsRightSideVisible] = useState({
+    isOpen: false,
+    chat: false,
+    participantList: false,
+  });
 
   const { roomId } = useParams();
   const {
@@ -23,6 +27,15 @@ const MeetingRoom = () => {
     setButtonState,
     peerItems,
   } = useSocket();
+
+  const [showOverlay, setShowOverlay] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowOverlay(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     window.addEventListener("beforeunload", handleLeave);
@@ -46,11 +59,16 @@ const MeetingRoom = () => {
   }, [roomId, user, socket, stream]);
 
   const closeRightSide = () => {
-    setIsRightSideVisible(false);
+    setIsRightSideVisible((prev) => ({ ...prev, isOpen: false }));
   };
 
-  const expandRightSide = () => {
-    setIsRightSideVisible(true);
+  const expandRightSide = ({ chat, participantList }) => {
+    setIsRightSideVisible((prev) => ({
+      ...prev,
+      isOpen: true,
+      chat,
+      participantList,
+    }));
   };
 
   const handleFullscreen = () => {
@@ -94,10 +112,16 @@ const MeetingRoom = () => {
 
   return (
     <>
+      <div class={`overlay ${showOverlay ? "show" : ""}`}>Joining ... </div>
       <div className="app-container">
         <div className="left-side">
           <div className="navigation">
-            <a onClick={expandRightSide} className="nav-link icon">
+            <a
+              className="nav-link icon"
+              onClick={() =>
+                expandRightSide({ chat: true, participantList: false })
+              }
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -114,7 +138,12 @@ const MeetingRoom = () => {
               </svg>
             </a>
 
-            <a className="nav-link icon">
+            <a
+              className="nav-link icon"
+              onClick={() =>
+                expandRightSide({ chat: false, participantList: true })
+              }
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -172,7 +201,9 @@ const MeetingRoom = () => {
           </div>
         </div>
 
-        <div className={`right-side ${isRightSideVisible ? "show" : ""}`}>
+        <div
+          className={`right-side ${isRightSideVisible.isOpen ? "show" : ""}`}
+        >
           <button className="btn-close-right" onClick={closeRightSide}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -191,8 +222,8 @@ const MeetingRoom = () => {
               <path d="M15 9l-6 6M9 9l6 6"></path>
             </svg>
           </button>
-          <Chat />
-          {/* <Participants /> */}
+          {isRightSideVisible.chat && <Chat />}
+          {isRightSideVisible.participantList && <ParticipantList />}
         </div>
       </div>
     </>

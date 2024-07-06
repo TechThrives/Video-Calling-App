@@ -29,6 +29,12 @@ const VideoParticipant = ({ data }) => {
       </div>
       <p className="name-tag">{data.user.name}</p>
       <video ref={videoRef} autoPlay />
+      <img
+        src="https://images.unsplash.com/photo-1576110397661-64a019d88a98?ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80"
+        className={`${
+          data.peerStream.getVideoTracks()[0].enabled ? "" : "show"
+        }`}
+      />
     </div>
   );
 };

@@ -4,6 +4,7 @@
 }
 html,
 body {
+  min-width: 330px;
   background-color: var(--app-background);
   width: 100%;
   height: 100vh;
@@ -101,7 +102,7 @@ body.dark .btn-close-right {
 }
 /*==================== Navigation ====================*/
 .left-side {
-  position: relative;
+  position: absolute;
   padding: 12px;
   flex-basis: 90px;
   display: flex;
@@ -145,14 +146,17 @@ body.dark .btn-close-right {
   display: block;
   transform: translateX(0);
 }
-/*==================== Chat ====================*/
-.chat-container {
+
+/*==================== Right Side ====================*/
+.right-container {
   background-color: var(--chat-background);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
+
+/*==================== Chat ====================*/
 .chat-header {
   padding: 16px;
   border-bottom: 1px solid #f5f5f5;
@@ -172,8 +176,7 @@ body.dark .btn-close-right {
 .chat-area {
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
-  padding-top: 25px;
+  padding: 0px 16px;
 }
 .profile-picture {
   border-radius: 8px;
@@ -305,7 +308,94 @@ body.dark .btn-close-right {
   width: 20px;
   height: 20px;
 }
+
+/*==================== Participant List ====================*/
+
+.participant-list {
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.participant-card {
+  display: grid;
+  align-items: center;
+  padding: 12px 20px;
+  max-width: 300px;
+  border-radius: 8px;
+  grid-template-columns: 160px 80px;
+}
+.participant-data {
+  display: flex;
+}
+.participant-picture {
+  border-radius: 8px;
+  width: 35px;
+  height: 35px;
+  overflow: hidden;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.participant-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.participant-infos {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  font-size: medium;
+}
+.participant-infos .name {
+  font-weight: 700;
+  font-size: 12px;
+}
+.participant-infos .details {
+  font-size: 12px;
+  color: #777;
+}
+.participant-icons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-left: auto;
+}
+.participant-icon {
+  width: 18px;
+  height: 18px;
+}
 /*==================== Main App ====================*/
+@keyframes darkToLight {
+  0% {
+    background: rgba(0, 0, 0, 1);
+  }
+  100% {
+    background: rgba(0, 0, 0, 0.2);
+  }
+}
+.overlay {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  align-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  display: none;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+.overlay.show {
+  display: block;
+  animation: darkToLight 4s forwards;
+}
+
 .app-main {
   flex: 1;
   width: 100%;
@@ -342,13 +432,20 @@ body.dark .btn-close-right {
   object-fit: cover;
 }
 .video-participant img {
+  display: none;
+  position: absolute;
   width: 50%;
   height: 50%;
-  object-fit: cover; /* make the video cover the entire container */
+  object-fit: cover;
   border-radius: 100%;
 }
+
+.video-participant img.show {
+  display: block;
+}
+
 .name-tag {
-  display: none;
+  display: flex;
   cursor: pointer;
   position: absolute;
   bottom: -6px;
@@ -359,18 +456,12 @@ body.dark .btn-close-right {
   border-radius: 4px;
   padding: 4px 12px;
 }
-.video-participant:hover .name-tag {
-  display: flex;
-}
 
 .participant-action {
   position: absolute;
-  display: none;
+  display: flex;
   left: 12px;
   top: 12px;
-}
-.video-participant:hover .participant-action {
-  display: flex;
 }
 
 .btn-mute,
@@ -531,7 +622,7 @@ body.dark .btn-close-right {
   z-index: 1;
 }
 
-.video-user {
+.user-video {
   width: 80px;
   height: 80px;
   position: relative;
@@ -542,14 +633,27 @@ body.dark .btn-close-right {
   border-radius: 16px;
   background-color: var(--font-color);
 }
-.video-user video {
+.user-video video {
   width: 100%;
   height: 100%;
   border-radius: 16px;
   object-fit: cover;
 }
 
-.video-user:hover {
+.user-video img {
+  display: none;
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  object-fit: cover;
+  border-radius: 100%;
+}
+
+.user-video img.show {
+  display: flex;
+}
+
+.user-video:hover {
   width: 100px;
   height: 100px;
 }
@@ -599,33 +703,33 @@ body.dark .btn-close-right {
   border: none;
   background-color: transparent;
   position: absolute;
-  top: 24px;
-  right: 40px;
+  top: 20px;
+  right: 20px;
   color: var(--light-font);
   outline: none;
   cursor: pointer;
 }
 
-/*==================== Meet Join ====================*/
-.create-meet {
+/*==================== Meet Lobby ====================*/
+.lobby-meet {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
 }
-.meet-info {
+.lobby-info {
   width: 50%;
   padding: 1rem;
 }
-.meet-video {
+.lobby-video {
   width: 40%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-.video-own {
+.lobby-own {
   position: relative;
   width: 250px;
   height: 200px;
@@ -636,14 +740,14 @@ body.dark .btn-close-right {
   background-color: var(--font-color);
 }
 
-.video-own video {
+.lobby-own video {
   width: 100%;
   height: 100%;
   object-fit: cover; /* make the video cover the entire container */
   border-radius: 16px;
 }
 
-.video-own .video-call-actions {
+.lobby-own .video-call-actions {
   position: absolute;
   bottom: 6%;
   left: 50%;
@@ -653,8 +757,21 @@ body.dark .btn-close-right {
   gap: 5px;
 }
 
-.lobby-btn{
+.lobby-btn {
   margin-top: 20px;
+}
+
+.lobby-own img {
+  display: none;
+  position: absolute;
+  width: 50%;
+  height: 60%;
+  object-fit: cover;
+  border-radius: 100%;
+}
+
+.lobby-own img.show {
+  display: block;
 }
 
 /*==================== MEDIA QUERIES ====================*/
@@ -681,9 +798,6 @@ body.dark .btn-close-right {
 
 /*==================== Devices smaller than 520px ====================*/
 @media screen and (max-width: 520px) {
-  .left-side {
-    display: none;
-  }
   .app-main {
     padding: 72px 16px 16px 16px;
   }
@@ -702,9 +816,15 @@ body.dark .btn-close-right {
     font-size: 12px;
   }
 
-  .video-own {
-    width: 150px;
-    height: 130px;
+  .lobby-own {
+    width: 180px;
+    height: 160px;
+  }
+
+  .lobby-own .video-action-button {
+    width: 35px;
+    height: 35px;
+    padding: 2px;
   }
 }
 /*==================== Devices Between 520px - 720px ====================*/
