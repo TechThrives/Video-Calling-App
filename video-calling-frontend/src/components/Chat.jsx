@@ -19,7 +19,7 @@ const Chat = () => {
   const sendMessage = () => {
     if (message !== "" && user) {
       socket.emit("send-message", {
-        roomId: roomId,
+        roomId,
         content: message,
         senderId: user._id,
       });

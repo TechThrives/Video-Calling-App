@@ -15,7 +15,7 @@ const ParticipantList = () => {
               <div className="participant-data">
                 <div class="participant-picture">
                   <img
-                    src="https://images.unsplash.com/photo-1576110397661-64a019d88a98?ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80"
+                    src={`${process.env.REACT_APP_SERVER}/api/user/image/${peerItems[peerId].user._id}`}
                     alt="Avatar"
                   />
                 </div>

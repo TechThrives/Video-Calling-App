@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Lobby from "../components/Lobby";
 import { useSocket } from "../context/SocketContext";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import MeetingRoom from "../components/MeetingRoom";
 
 export const Meeting = () => {
@@ -10,11 +10,10 @@ export const Meeting = () => {
 
   const { socket, isJoined } = useSocket();
   const { roomId } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("Req to check room", roomId);
-    socket.emit("check-room", { roomId: roomId });
+    socket.emit("check-room", { roomId });
 
     socket.on("room-exists", ({ room, status }) => {
       console.log("room-exists", room, status);

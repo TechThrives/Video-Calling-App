@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
-const VideoUser = ({ stream, name }) => {
+const VideoUser = ({ stream, userData }) => {
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ const VideoUser = ({ stream, name }) => {
       <div className="user-video">
         <video ref={videoRef} autoPlay />
         <img
-          src="https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg"
+          src={`data:image/png;base64,${userData && userData.profileImg}`}
           className={`${
             stream && stream.getVideoTracks()[0].enabled ? "" : "show"
           }`}

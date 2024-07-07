@@ -27,12 +27,12 @@ const Login = () => {
     };
     if (await fetchService(url, options)) {
       setIsAuthenticated(true);
-      navigate("/meeting");
+      navigate("/welcome");
     }
   };
 
   return isAuthenticated ? (
-    <Navigate to="/meeting" />
+    <Navigate to="/welcome" />
   ) : (
     <>
       <div className="app-main">

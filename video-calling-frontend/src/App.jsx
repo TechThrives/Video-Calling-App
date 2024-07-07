@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import PrivateRoute from "./utils/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import Welcome from "./pages/Welcome";
+import Profile from "./pages/Profile";
 
 const App = () => {
   return (
@@ -23,26 +24,43 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/meeting" element={<PrivateRoute />}>
-              <Route path="welcome" element={<Welcome />} />
 
-              <Route
-                path=":roomId"
-                element={
+            <Route
+              path="/welcome"
+              element={
+                <PrivateRoute>
+                  <Welcome />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/meeting"
+              element={
+                <PrivateRoute>
                   <SocketProvider>
                     <Meeting />
                   </SocketProvider>
-                }
-              />
-              <Route
-                index
-                element={
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/meeting/:roomId"
+              element={
+                <PrivateRoute>
                   <SocketProvider>
                     <Meeting />
                   </SocketProvider>
-                }
-              />
-            </Route>
+                </PrivateRoute>
+              }
+            />
           </Routes>
         </Router>
       </AuthProvider>

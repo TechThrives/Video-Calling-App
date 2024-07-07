@@ -1,9 +1,27 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSocket } from "../context/SocketContext";
+import Participants from "./Participants";
 
 const Lobby = ({ roomData, isRoomExist }) => {
-  const { socket, stream, setIsJoined, handleMic, handleVideo, buttonState } =
-    useSocket();
+  const {
+    socket,
+    stream,
+    setIsJoined,
+    handleMic,
+    handleVideo,
+    buttonState,
+    userData,
+  } = useSocket();
+
+  const [showOverlay, setShowOverlay] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowOverlay(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -23,20 +41,24 @@ const Lobby = ({ roomData, isRoomExist }) => {
   };
   return (
     <>
+      <div class={`overlay ${showOverlay ? "show" : ""}`}>Loading ... </div>
       <div className="app-main">
         <div className="lobby-meet">
           <div className="lobby-info">
             <h4>We are Creative Tech Enthusiast working since 2015</h4>
-            <p className="text">
-              I am Rahul Yaduvanshi works at Css3 Transition since last 3 years.
-              We are here to provide touch notch solution for your website or
-            </p>
           </div>
+
+          {isRoomExist ? (
+            <Participants participants={roomData.participants} />
+          ) : (
+            <div className="empty-lobby"></div>
+          )}
+
           <div className="lobby-video">
             <div className="lobby-own">
               <video ref={videoRef} autoPlay></video>
               <img
-                src="https://images.unsplash.com/photo-1576110397661-64a019d88a98?ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80"
+                src={`data:image/png;base64,${userData && userData.profileImg}`}
                 className={`${
                   stream && stream.getVideoTracks()[0].enabled ? "" : "show"
                 }`}
@@ -58,7 +80,6 @@ const Lobby = ({ roomData, isRoomExist }) => {
               </div>
             </div>
           </div>
-
           <div className="lobby-btn">
             {isRoomExist ? (
               <button className="btn" onClick={joinRoom}>

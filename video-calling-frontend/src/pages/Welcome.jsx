@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import fetchService from "../services/fetchService";
 
 const Welcome = () => {
-  const handleJoin = () => {};
-  const handleCreate = () => {};
+  const navigate = useNavigate();
+  const [meetingCode, setMeetingCode] = useState("");
+  const handleJoin = async () => {
+    const url = `/api/room/${meetingCode}`;
+    const options = {
+      credentials: "include",
+    };
+    if (await fetchService(url, options)) {
+      navigate(`/meeting/${meetingCode}`);
+    }
+  };
+  const handleCreate = () => {
+    navigate("/meeting");
+  };
 
   return (
     <>
@@ -21,7 +35,13 @@ const Welcome = () => {
               <div className="join-div">
                 <div class="join-meeting">
                   <div className="input-group">
-                    <input type="text" name="email" required />
+                    <input
+                      type="text"
+                      name="code"
+                      value={meetingCode}
+                      onChange={(e) => setMeetingCode(e.target.value)}
+                      required
+                    />
                     <label htmlFor="">Join Code</label>
                   </div>
                 </div>

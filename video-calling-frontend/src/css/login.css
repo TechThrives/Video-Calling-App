@@ -38,6 +38,7 @@
 }
 /* Input label color */
 .input-group input:focus ~ label,
+.input-group input:disabled ~ label,
 .input-group input:valid ~ label {
   top: 0;
   font-size: 12px;
@@ -76,4 +77,32 @@
 
 .sign-link p a:hover {
   text-decoration: underline;
+}
+
+/* ==================== Update Page ==================== */
+
+.img-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.img-input {
+  opacity: 0;
+  width: 0px;
+}
+
+.img-preview {
+  max-width: 150px;
+  border-radius: 999px;
+  outline: 3px solid var(--main-color);
+  cursor: pointer;
+  transition: 200ms ease-in-out;
+  margin-bottom: 15px;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.img-preview:hover {
+  outline: 5px solid var(--main-color);
 }

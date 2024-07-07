@@ -70,7 +70,7 @@ export const SocketProvider = ({ children }) => {
     audioTrack.enabled = !audioTrack.enabled;
     if (roomId && user._id) {
       socket.emit("audio-mute", {
-        roomId: roomId,
+        roomId,
         peerId: user._id,
         audio: audioTrack.enabled,
       });
@@ -87,7 +87,7 @@ export const SocketProvider = ({ children }) => {
     videoTrack.enabled = !videoTrack.enabled;
     if (roomId && user._id) {
       socket.emit("video-mute", {
-        roomId: roomId,
+        roomId,
         peerId: user._id,
         video: videoTrack.enabled,
       });

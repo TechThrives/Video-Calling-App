@@ -18,9 +18,26 @@ const roomHandler = (socket) => {
           },
         });
 
+        const roomData = {
+          _id: room._id,
+          name: room.name,
+          participants: [],
+        };
+
+        room.participants.forEach((participant) => {
+          roomData.participants.push({
+            _id: participant.user._id,
+            name: participant.user.name,
+            email: participant.user.email,
+            profileImg: participant.user.profileImg
+              ? participant.user.profileImg.toString("base64")
+              : "",
+          });
+        });
+
         if (room) {
           socket.emit("room-exists", {
-            room: room,
+            room: roomData,
             status: true,
           });
           return;

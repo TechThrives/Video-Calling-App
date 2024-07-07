@@ -41,6 +41,18 @@ button:hover {
 a {
   text-decoration: none;
 }
+
+img:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--main-color) no-repeat center;
+  color: transparent;
+}
 /*==================== VARIABLES CSS ====================*/
 
 body {
@@ -330,6 +342,8 @@ body.dark .btn-close-right {
   display: flex;
 }
 .participant-picture {
+  position: relative;
+  display: flex;
   border-radius: 8px;
   width: 35px;
   height: 35px;
@@ -588,16 +602,35 @@ body.dark .btn-close-right {
   display: block;
   margin: 0 16px;
 }
+.empty-lobby {
+  display: flex;
+  padding: 12px;
+  max-width: 232px;
+  margin: 20px 0;
+}
 .participants {
   display: flex;
-  background-color: var(--button-bg);
-  box-shadow: var(--navigation-box-shadow);
-  margin-top: 16px;
   padding: 12px;
   border-radius: 8px;
   max-width: 232px;
-  margin-left: auto;
+  margin-top: 20px;
 }
+.participant {
+  display: flex;
+  position: relative;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+.participant img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .participant-more {
   background-color: #e1e0e1;
   font-size: 14px;
@@ -608,6 +641,14 @@ body.dark .btn-close-right {
   font-weight: 700;
   border-radius: 8px;
   min-width: 32px;
+}
+.participant-names {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-items: center;
+  font-size: 13px;
+  margin-bottom: 15px;
 }
 
 .video-user-container {
@@ -719,8 +760,11 @@ body.dark .btn-close-right {
   text-align: center;
 }
 .lobby-info {
-  width: 50%;
-  padding: 1rem;
+  margin-top: 20px;
+  width: 75%;
+}
+.lobby-info h4 {
+  margin: 0 0;
 }
 .lobby-video {
   width: 40%;

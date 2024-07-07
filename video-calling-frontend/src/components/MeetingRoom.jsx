@@ -18,6 +18,7 @@ const MeetingRoom = () => {
   const {
     socket,
     user,
+    userData,
     setUser,
     stream,
     setStream,
@@ -45,10 +46,10 @@ const MeetingRoom = () => {
       const audio = stream.getAudioTracks()[0].enabled;
       const video = stream.getVideoTracks()[0].enabled;
       socket.emit("joined-room", {
-        roomId: roomId,
+        roomId,
         peerId: user._id,
-        audio: audio,
-        video: video,
+        audio,
+        video,
       });
     }
 
@@ -104,7 +105,7 @@ const MeetingRoom = () => {
   };
 
   const handleLeave = () => {
-    socket.emit("left-room", { roomId: roomId, peerId: user._id });
+    socket.emit("left-room", { roomId, peerId: user._id });
     setUser(null);
     setStream(null);
     navigate("/");
@@ -172,7 +173,7 @@ const MeetingRoom = () => {
           </div>
 
           <div className="video-user-container">
-            <VideoUser stream={stream} />
+            <VideoUser stream={stream} userData={userData} />
           </div>
 
           <div className="video-call-actions">
