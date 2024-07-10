@@ -7,6 +7,7 @@ import MeetingRoom from "../components/MeetingRoom";
 export const Meeting = () => {
   const [roomData, setRoomData] = useState(null);
   const [isRoomExist, setRoomExist] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { socket, isJoined } = useSocket();
   const { roomId } = useParams();
@@ -24,6 +25,7 @@ export const Meeting = () => {
         setRoomData(null);
         setRoomExist(status);
       }
+      setIsLoading(false);
     });
 
     return () => {
@@ -33,7 +35,13 @@ export const Meeting = () => {
   }, [socket]);
 
   if (!isJoined) {
-    return <Lobby roomData={roomData} isRoomExist={isRoomExist} />;
+    return (
+      <Lobby
+        roomData={roomData}
+        isRoomExist={isRoomExist}
+        isLoading={isLoading}
+      />
+    );
   } else {
     return <MeetingRoom />;
   }

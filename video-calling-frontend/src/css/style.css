@@ -396,18 +396,19 @@ body.dark .btn-close-right {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
   color: white;
   align-content: center;
   font-size: 24px;
   font-weight: bold;
   display: none;
-  opacity: 1;
-  transition: opacity 0.3s;
 }
 .overlay.show {
   display: block;
   animation: darkToLight 4s forwards;
+}
+.overlay.dark-show {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .app-main {

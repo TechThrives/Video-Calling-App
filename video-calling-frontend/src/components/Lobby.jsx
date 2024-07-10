@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSocket } from "../context/SocketContext";
 import Participants from "./Participants";
 
-const Lobby = ({ roomData, isRoomExist }) => {
+const Lobby = ({ roomData, isRoomExist, isLoading }) => {
   const {
     socket,
     stream,
@@ -12,15 +12,6 @@ const Lobby = ({ roomData, isRoomExist }) => {
     buttonState,
     userData,
   } = useSocket();
-
-  const [showOverlay, setShowOverlay] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowOverlay(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   const videoRef = useRef(null);
 
@@ -41,7 +32,7 @@ const Lobby = ({ roomData, isRoomExist }) => {
   };
   return (
     <>
-      <div class={`overlay ${showOverlay ? "show" : ""}`}>Loading ... </div>
+      <div class={`overlay ${isLoading ? "dark-show" : ""}`}>Loading ... </div>
       <div className="app-main">
         <div className="lobby-meet">
           <div className="lobby-info">
@@ -49,7 +40,11 @@ const Lobby = ({ roomData, isRoomExist }) => {
           </div>
 
           {isRoomExist ? (
-            <Participants participants={roomData.participants} />
+            <Participants
+              participants={roomData.participants.filter(
+                (p) => p._id != userData._id
+              )}
+            />
           ) : (
             <div className="empty-lobby"></div>
           )}

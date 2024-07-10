@@ -1,7 +1,6 @@
 import React from "react";
 
 const Participants = ({ participants }) => {
-  console.log(participants);
   if (participants.length == 0) {
     return (
       <>
