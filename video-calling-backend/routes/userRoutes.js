@@ -1,7 +1,6 @@
 import User from "../models/user";
 import express from "express";
 import mongoose from "mongoose";
-import authMiddleware from "../middleware/authMiddleware";
 import multer from "multer";
 
 const { ObjectId } = mongoose.Types;
@@ -11,7 +10,7 @@ const upload = multer({ storage });
 
 const router = express.Router();
 
-router.get("/user", authMiddleware, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
@@ -37,40 +36,35 @@ router.get("/user", authMiddleware, async (req, res) => {
   }
 });
 
-router.post(
-  "/user/update",
-  authMiddleware,
-  upload.single("profileImg"),
-  async (req, res) => {
-    try {
-      const user = await User.findById(req.user._id);
+router.post("/update", upload.single("profileImg"), async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
 
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const updatedUserData = {
-        name: req.body.name,
-      };
-
-      if (req.file) {
-        updatedUserData.profileImg = req.file.buffer;
-      }
-
-      const updatedUser = await User.findByIdAndUpdate(
-        req.user._id,
-        updatedUserData
-      );
-
-      return res.status(200).json({ message: "Profile updated successfully" });
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-  }
-);
 
-router.get("/user/:userId", authMiddleware, async (req, res) => {
+    const updatedUserData = {
+      name: req.body.name,
+    };
+
+    if (req.file) {
+      updatedUserData.profileImg = req.file.buffer;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      updatedUserData
+    );
+
+    return res.status(200).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
 
   if (ObjectId.isValid(userId)) {
@@ -103,7 +97,7 @@ router.get("/user/:userId", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/user/image/:userId", authMiddleware, async (req, res) => {
+router.get("/image/:userId", async (req, res) => {
   const { userId } = req.params;
 
   if (ObjectId.isValid(userId)) {
@@ -118,9 +112,11 @@ router.get("/user/image/:userId", authMiddleware, async (req, res) => {
       return res.status(200).send(user.profileImg);
     } catch (error) {
       console.error("Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      return res.status(200).send(null);
     }
   }
+  res.set("Content-Type", "image/png");
+  return res.status(200).send(null);
 });
 
 export default router;

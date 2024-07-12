@@ -14,7 +14,7 @@ const ToastContainer = () => {
       closeOnClick
       rtl={false}
       draggable
-      pauseOnHover
+      pauseOnHover={false}
       theme={isDarkMode ? "dark" : "light"}
       text
     />

@@ -32,7 +32,13 @@ const Lobby = ({ roomData, isRoomExist, isLoading }) => {
   };
   return (
     <>
-      <div class={`overlay ${isLoading ? "dark-show" : ""}`}>Loading ... </div>
+      <div
+        class={`overlay ${isLoading ? "dark-show" : ""} ${
+          !stream ? "dark-show" : ""
+        }`}
+      >
+        Loading ...
+      </div>
       <div className="app-main">
         <div className="lobby-meet">
           <div className="lobby-info">

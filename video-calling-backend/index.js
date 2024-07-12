@@ -11,6 +11,7 @@ import roomRoutes from "./routes/roomRoutes";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import chatHandler from "./handlers/chatHandler";
+import authMiddleware from "./middleware/authMiddleware";
 
 const app = express();
 
@@ -51,9 +52,9 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 
 // Routes
-app.use("/api", roomRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api", userRoutes);
+app.use("/api/user", authMiddleware, userRoutes);
+app.use("/api/room", authMiddleware, roomRoutes);
 
 server.listen(serverConfig.PORT, () => {
   console.log(`Server is up at port ${serverConfig.PORT}`);
