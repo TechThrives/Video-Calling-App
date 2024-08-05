@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import fetchService from "../services/fetchService";
 
 const Welcome = () => {
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+  })
+
+  const [imageSrc, setImageSrc] = useState(
+    "https://images.unsplash.com/photo-1620163280053-68782bd98475"
+  );
   const navigate = useNavigate();
   const [meetingCode, setMeetingCode] = useState("");
   const handleJoin = async () => {
@@ -18,8 +26,36 @@ const Welcome = () => {
     navigate("/meeting");
   };
 
+  const fetchProfile = async () => {
+    const url = "/api/user";
+    const options = {
+      method: "GET",
+      credentials: "include",
+    };
+    const response = await fetchService(url, options);
+
+    if (response.profileImg) {
+      setImageSrc(`data:image/png;base64,${response.profileImg}`);
+    }
+
+    setUser({
+      name: response.name,
+      email: response.email,
+    });
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
   return (
     <>
+      <div class="profile-button" onClick={() => navigate("/profile")}>
+        <img
+          src={imageSrc}
+          alt="avatar"
+        />
+      </div>
       <div class="meeting-page">
         <div class="meeting-left">
           <div class="meeting-content">

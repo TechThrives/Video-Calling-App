@@ -42,7 +42,7 @@ const Lobby = ({ roomData, isRoomExist, isLoading }) => {
       <div className="app-main">
         <div className="lobby-meet">
           <div className="lobby-info">
-            <h4>We are Creative Tech Enthusiast working since 2015</h4>
+            <h4>We are Creative Tech Enthusiast</h4>
           </div>
 
           {isRoomExist ? (

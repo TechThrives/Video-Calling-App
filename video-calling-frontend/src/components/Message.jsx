@@ -6,7 +6,7 @@ const Message = ({ message, reverse }) => {
       <div className={`message-wrapper ${reverse}`}>
         <div className="profile-picture">
           <img
-            src="https://images.unsplash.com/photo-1581824283135-0666cf353f35?ixlib=rb-1.2.1&auto=format&fit=crop&w=1276&q=80"
+            src={`${process.env.REACT_APP_SERVER}/api/user/image/${message.sender._id}`}
             alt=""
           />
         </div>

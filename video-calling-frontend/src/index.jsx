@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./css/style.css";
 import "./css/login.css";
 import "./css/custom.css";
+import "./css/landing.css";
 
 import App from "./App";
 
