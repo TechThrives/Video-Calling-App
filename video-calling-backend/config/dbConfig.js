@@ -4,9 +4,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // DB CONNECTION
-const dbConfig = connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const dbConfig = connect(process.env.MONGO_URI);
 
 export default dbConfig;

@@ -6,7 +6,7 @@ const Welcome = () => {
   const [user, setUser] = useState({
     name: "",
     email: "",
-  })
+  });
 
   const [imageSrc, setImageSrc] = useState(
     "https://images.unsplash.com/photo-1620163280053-68782bd98475"
@@ -34,14 +34,14 @@ const Welcome = () => {
     };
     const response = await fetchService(url, options);
 
-    if (response.profileImg) {
+    if (response != null) {
       setImageSrc(`data:image/png;base64,${response.profileImg}`);
-    }
 
-    setUser({
-      name: response.name,
-      email: response.email,
-    });
+      setUser({
+        name: response.name,
+        email: response.email,
+      });
+    }
   };
 
   useEffect(() => {
@@ -51,15 +51,12 @@ const Welcome = () => {
   return (
     <>
       <div class="profile-button" onClick={() => navigate("/profile")}>
-        <img
-          src={imageSrc}
-          alt="avatar"
-        />
+        <img src={imageSrc} alt="avatar" />
       </div>
       <div class="meeting-page">
         <div class="meeting-left">
           <div class="meeting-content">
-            <h2>Video meetings. Now free for everyone.</h2>
+            <h2>Video Fusion. Now free for everyone.</h2>
             <p>
               Join or start a video meeting with just a few clicks. No credit
               card required.

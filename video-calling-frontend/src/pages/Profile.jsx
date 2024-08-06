@@ -35,14 +35,14 @@ const Profile = () => {
     };
     const response = await fetchService(url, options);
 
-    if (response.profileImg) {
+    if (response != null) {
       setImageSrc(`data:image/png;base64,${response.profileImg}`);
-    }
 
-    setUserUpdate({
-      name: response.name,
-      email: response.email,
-    });
+      setUserUpdate({
+        name: response.name,
+        email: response.email,
+      });
+    }
   };
 
   useEffect(() => {

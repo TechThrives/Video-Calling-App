@@ -109,7 +109,7 @@ export const SocketProvider = ({ children }) => {
       console.log("response", response);
       const newPeer = new Peer(response._id, {
         host: process.env.REACT_APP_PEER_SERVER,
-        port: process.env.REACT_APP_PEER_PORT,
+        port: process.env.REACT_APP_PEER_PORT || "",
         path: process.env.REACT_APP_PEER_PATH,
         secure: true,
       });

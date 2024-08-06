@@ -1,5 +1,6 @@
 {
-  "name": "video-calling",
+  "name": "video-fusion",
+  "description": "video fusion",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

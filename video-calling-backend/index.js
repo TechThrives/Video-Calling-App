@@ -1,10 +1,12 @@
 import express from "express";
 import serverConfig from "./config/serverConfig";
 import dbConfig from "./config/dbConfig";
-import sslConfig from "./config/sslConfig";
 import { Server } from "socket.io";
+import http from "http";
 import https from "https";
 import cors from "cors";
+import path from "path";
+import fs from "fs";
 import cookieParser from "cookie-parser";
 import roomHandler from "./handlers/roomHandler";
 import roomRoutes from "./routes/roomRoutes";
@@ -27,7 +29,32 @@ const corsOptions = {
 
 console.log(process.env.FRONTEND_URL);
 
-const server = https.createServer(sslConfig, app);
+let server;
+if (
+  process.env.SSL_CRT_FILE &&
+  process.env.SSL_KEY_FILE &&
+  process.env.PASSPHRASE
+) {
+  console.log("SSL is enabled");
+  const certificate = fs.readFileSync(
+    path.resolve(process.env.SSL_CRT_FILE),
+    "utf8"
+  );
+  const privateKey = fs.readFileSync(
+    path.resolve(process.env.SSL_KEY_FILE),
+    "utf8"
+  );
+
+  const sslConfig = {
+    cert: certificate,
+    key: privateKey,
+    passphrase: process.env.PASSPHRASE,
+  };
+
+  server = https.createServer(sslConfig, app);
+} else {
+  server = http.createServer(app);
+}
 
 // Socket.io setup
 const io = new Server(server, {
@@ -63,5 +90,3 @@ server.listen(serverConfig.PORT, () => {
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
-
-//peerjs --port 9000 --key peerjs --path /myapp
