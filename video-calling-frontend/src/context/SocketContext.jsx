@@ -107,12 +107,22 @@ export const SocketProvider = ({ children }) => {
     fetchService(url, options).then((response) => {
       setUserData(response);
       console.log("response", response);
-      const newPeer = new Peer(response._id, {
-        host: process.env.REACT_APP_PEER_SERVER,
-        port: process.env.REACT_APP_PEER_PORT || "",
-        path: process.env.REACT_APP_PEER_PATH,
-        secure: true,
-      });
+      let newPeer;
+      if (process.env.REACT_APP_PEER_PORT) {
+        newPeer = new Peer(response._id, {
+          host: process.env.REACT_APP_PEER_SERVER,
+          port: process.env.REACT_APP_PEER_PORT,
+          path: process.env.REACT_APP_PEER_PATH,
+          secure: true,
+        });
+      } else {
+        newPeer = new Peer(response._id, {
+          host: process.env.REACT_APP_PEER_SERVER,
+          // port: process.env.REACT_APP_PEER_PORT,
+          path: process.env.REACT_APP_PEER_PATH,
+          secure: true,
+        });
+      }
 
       setUser(newPeer);
 
