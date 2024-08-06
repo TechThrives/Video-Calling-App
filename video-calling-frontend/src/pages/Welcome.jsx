@@ -78,7 +78,7 @@ const Welcome = () => {
                     <label htmlFor="">Join Code</label>
                   </div>
                 </div>
-                <button className="btn" onClick={handleJoin}>
+                <button className="btn btn-join" onClick={handleJoin}>
                   Join Meeting
                 </button>
               </div>

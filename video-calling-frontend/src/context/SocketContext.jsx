@@ -40,7 +40,11 @@ export const SocketProvider = ({ children }) => {
   const [isJoined, setIsJoined] = useState(false);
 
   const [user, setUser] = useState();
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState({
+    name: "",
+    email: "",
+    profileImg: "",
+  });
   const [stream, setStream] = useState(null);
   const [buttonState, setButtonState] = useState({
     mic: true,
@@ -66,35 +70,33 @@ export const SocketProvider = ({ children }) => {
 
   const handleMic = ({ roomId }) => {
     if (!stream) return;
-    let audioTrack = stream.getAudioTracks()[0];
-    audioTrack.enabled = !audioTrack.enabled;
+    stream.getAudioTracks()[0].enabled = !stream.getAudioTracks()[0].enabled;
     if (roomId && user._id) {
       socket.emit("audio-mute", {
         roomId,
         peerId: user._id,
-        audio: audioTrack.enabled,
+        audio: stream.getAudioTracks()[0].enabled,
       });
     }
     setButtonState((prev) => ({
       ...prev,
-      mic: audioTrack.enabled,
+      mic: stream.getAudioTracks()[0].enabled,
     }));
   };
 
   const handleVideo = ({ roomId }) => {
     if (!stream) return;
-    let videoTrack = stream.getVideoTracks()[0];
-    videoTrack.enabled = !videoTrack.enabled;
+    stream.getVideoTracks()[0].enabled = !stream.getVideoTracks()[0].enabled;
     if (roomId && user._id) {
       socket.emit("video-mute", {
         roomId,
         peerId: user._id,
-        video: videoTrack.enabled,
+        video: stream.getVideoTracks()[0].enabled,
       });
     }
     setButtonState((prev) => ({
       ...prev,
-      video: videoTrack.enabled,
+      video: stream.getVideoTracks()[0].enabled,
     }));
   };
 
@@ -163,7 +165,7 @@ export const SocketProvider = ({ children }) => {
 
     user.on("call", (call) => {
       console.log("Received call", call);
-
+      
       call.answer(stream);
       call.on("stream", (remoteStream) => {
         peerDispatch(

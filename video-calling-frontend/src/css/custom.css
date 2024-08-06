@@ -37,8 +37,9 @@
 }
 
 .meeting-left {
-  flex: 1;
-  padding: 30px;
+  display: flex;
+  width: 60%;
+  flex-direction: column;
 }
 
 .meeting-right {
@@ -64,6 +65,8 @@ p {
 
 .meeting-btn {
   display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
@@ -71,25 +74,20 @@ p {
 
 .join-div {
   display: flex;
-  right: 20px;
-  position: relative;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .join-meeting {
   display: flex;
-  margin-right: 10px;
   align-items: center;
-  margin-left: 120px;
   width: 140px;
+  margin-left: 20px;
   justify-items: end;
 }
 
 .btn-join {
-  background-color: #007bff;
-  color: #fff;
-  transition: background-color 0.3s ease;
+  margin-left: 20px;
 }
 
 .btn-join:hover {

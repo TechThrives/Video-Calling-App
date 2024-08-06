@@ -99,9 +99,6 @@ const roomHandler = (socket) => {
           socket.join(roomId);
           socket.to(roomId).emit("user-joined", { peer: user, audio, video });
 
-          socket.on("ready", () => {
-            socket.to(roomId).emit("user-joined", { peer: user, audio, video });
-          });
         } else {
           socket.emit("invalid-request", { message: "User or room not found" });
         }

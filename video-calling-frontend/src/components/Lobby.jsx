@@ -45,7 +45,7 @@ const Lobby = ({ roomData, isRoomExist, isLoading }) => {
             <h4>We are Creative Tech Enthusiast</h4>
           </div>
 
-          {isRoomExist ? (
+          {isRoomExist && userData? (
             <Participants
               participants={roomData.participants.filter(
                 (p) => p._id != userData._id

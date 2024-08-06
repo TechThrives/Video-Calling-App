@@ -5,7 +5,7 @@ const VideoParticipant = ({ data }) => {
   useEffect(() => {
     if (videoRef.current && data.peerStream) {
       videoRef.current.srcObject = data.peerStream;
-      videoRef.current.muted = !data.peerStream.getAudioTracks()[0].enabled;
+      // videoRef.current.muted = !data.peerStream.getAudioTracks()[0].enabled;
     }
   }, [data.peerStream]);
 
