@@ -470,6 +470,7 @@ body.dark .btn-close-right {
   background-color: rgba(0, 15, 47, 0.5);
   border-radius: 4px;
   padding: 4px 12px;
+  z-index: 1;
 }
 
 .participant-action {
@@ -477,6 +478,7 @@ body.dark .btn-close-right {
   display: flex;
   left: 12px;
   top: 12px;
+  z-index: 1;
 }
 
 .btn-mute,
@@ -586,6 +588,10 @@ body.dark .btn-close-right {
   padding-left: 42px;
   background-size: 20px;
   background-position: center left 12px;
+}
+
+.video-call-actions .extra-buttons{
+  display: none;
 }
 
 .video-action-button.chat {
@@ -869,8 +875,28 @@ body.dark .btn-close-right {
     padding: 72px 16px 16px 16px;
   }
 
+  .video-participant {
+    width: 120px;
+    height: 120px;
+  }
+  .mode-switch {
+    top: 3%;
+  }
+
+  .btn-mute,
+.btn-unmute,
+.btn-camera-on,
+.btn-camera-off {
+  width: 24px;
+  height: 24px;
+}
+
   .left-side {
     display: none;
+  }
+
+  .video-call-actions .extra-buttons{
+    display: block;
   }
 
   .mode-switch {
@@ -897,16 +923,6 @@ body.dark .btn-close-right {
     width: 35px;
     height: 35px;
     padding: 2px;
-  }
-}
-/*==================== Devices Between 520px - 720px ====================*/
-@media screen and (max-width: 520px) and (max-width: 720px) {
-  .video-participant {
-    width: 120px;
-    height: 120px;
-  }
-  .mode-switch {
-    top: 3%;
   }
 }
 

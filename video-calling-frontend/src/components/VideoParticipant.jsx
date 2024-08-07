@@ -30,7 +30,7 @@ const VideoParticipant = ({ data }) => {
       <p className="name-tag">{data.user.name}</p>
       <video ref={videoRef} autoPlay />
       <img
-        src={`${process.env.REACT_APP_SERVER}/api/user/image/${data.user._id}`}
+        src={`data:image/png;base64,${data.user.profileImg}`}
         className={`${
           data.peerStream.getVideoTracks()[0].enabled ? "" : "show"
         }`}

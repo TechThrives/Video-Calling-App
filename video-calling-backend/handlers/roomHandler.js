@@ -70,6 +70,20 @@ const roomHandler = (socket) => {
     if (ObjectId.isValid(peerId) && ObjectId.isValid(roomId)) {
       try {
         const user = await User.findById(peerId);
+
+        // Convert profile image buffer to base64 string if it exists
+        let profileImgBase64 = null;
+        if (user.profileImg) {
+          profileImgBase64 = user.profileImg.toString("base64");
+        }
+
+        const userData = {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          profileImg: profileImgBase64,
+        };
+
         const room = await Room.findById(roomId).populate({
           path: "participants",
           populate: {
@@ -97,8 +111,7 @@ const roomHandler = (socket) => {
           }
 
           socket.join(roomId);
-          socket.to(roomId).emit("user-joined", { peer: user, audio, video });
-
+          socket.to(roomId).emit("user-joined", { peer: userData, audio, video });
         } else {
           socket.emit("invalid-request", { message: "User or room not found" });
         }

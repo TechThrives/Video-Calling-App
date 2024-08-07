@@ -170,40 +170,6 @@ const MeetingRoom = () => {
             {Object.keys(peerItems).map((peerId) => (
               <VideoParticipant key={peerId} data={peerItems[peerId]} />
             ))}
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
-
-            {Object.keys(peerItems).map((peerId) => (
-              <VideoParticipant key={peerId} data={peerItems[peerId]} />
-            ))}
           </div>
 
           <div className="video-user-container">
@@ -211,6 +177,7 @@ const MeetingRoom = () => {
           </div>
 
           <div className="video-call-actions">
+            <div className="extra-buttons">
           <button
               className="video-action-button chat"
               onClick={() =>
@@ -223,6 +190,7 @@ const MeetingRoom = () => {
                 expandRightSide({ chat: false, participantList: true })
               }
             ></button>
+            </div>
             <button
               className={`video-action-button mic ${
                 buttonState.mic ? "on" : ""
