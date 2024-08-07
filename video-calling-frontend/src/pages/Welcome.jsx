@@ -50,23 +50,23 @@ const Welcome = () => {
 
   return (
     <>
-      <div class="profile-button" onClick={() => navigate("/profile")}>
+      <div className="profile-button" onClick={() => navigate("/profile")}>
         <img src={imageSrc} alt="avatar" />
       </div>
-      <div class="meeting-page">
-        <div class="meeting-left">
-          <div class="meeting-content">
+      <div className="meeting-page">
+        <div className="meeting-left">
+          <div className="meeting-content">
             <h2>Video Fusion. Now free for everyone.</h2>
             <p>
               Join or start a video meeting with just a few clicks. No credit
               card required.
             </p>
-            <div class="meeting-btn">
-              <button class="btn" onClick={handleCreate}>
+            <div className="meeting-btn">
+              <button className="btn" onClick={handleCreate}>
                 New Meeting
               </button>
               <div className="join-div">
-                <div class="join-meeting">
+                <div className="join-meeting">
                   <div className="input-group">
                     <input
                       type="text"
@@ -84,12 +84,12 @@ const Welcome = () => {
               </div>
             </div>
           </div>
-          <div class="help-text">
+          <div className="help-text">
             <a href="#">Learn more</a> about Meet
           </div>
         </div>
-        <div class="meeting-right">
-          <div class="meeting-content">
+        <div className="meeting-right">
+          <div className="meeting-content">
             <img src="https://www.gstatic.com/meet/google_meet_marketing_ongoing_meeting_grid_427cbb32d746b1d0133b898b50115e96.jpg" />
           </div>
         </div>

@@ -590,8 +590,14 @@ body.dark .btn-close-right {
   background-position: center left 12px;
 }
 
-.video-call-actions .extra-buttons{
+.extra-actions {
+  position: fixed;
   display: none;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 64px;
+  max-width: 500px;
+  bottom: 80px;
 }
 
 .video-action-button.chat {
@@ -895,8 +901,12 @@ body.dark .btn-close-right {
     display: none;
   }
 
-  .video-call-actions .extra-buttons{
-    display: block;
+  .video-call-wrapper {
+    height: 75%;
+  }
+
+  .extra-actions{
+    display: flex;
   }
 
   .mode-switch {

@@ -113,7 +113,7 @@ const MeetingRoom = () => {
 
   return (
     <>
-      <div class={`overlay ${showOverlay ? "show" : ""}`}>Joining ... </div>
+      <div className={`overlay ${showOverlay ? "show" : ""}`}>Joining ... </div>
       <div className="app-container">
         <div className="left-side">
           <div className="navigation">
@@ -176,9 +176,8 @@ const MeetingRoom = () => {
             <VideoUser stream={stream} userData={userData} />
           </div>
 
-          <div className="video-call-actions">
-            <div className="extra-buttons">
-          <button
+          <div className="extra-actions">
+            <button
               className="video-action-button chat"
               onClick={() =>
                 expandRightSide({ chat: true, participantList: false })
@@ -190,7 +189,9 @@ const MeetingRoom = () => {
                 expandRightSide({ chat: false, participantList: true })
               }
             ></button>
-            </div>
+          </div>
+
+          <div className="video-call-actions">
             <button
               className={`video-action-button mic ${
                 buttonState.mic ? "on" : ""

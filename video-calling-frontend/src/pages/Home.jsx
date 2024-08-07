@@ -5,9 +5,9 @@ const Home = () => {
   const navigate = useNavigate();
   return (
       <div className="hero">
-        <section class="hero-container">
-          <h1 class="hero-title-primary">Video Fusion</h1>
-          <h6 class="hero-title-sub">
+        <section className="hero-container">
+          <h1 className="hero-title-primary">Video Fusion</h1>
+          <h6 className="hero-title-sub">
             A Fully Functional Video Meeting App Built with ReactJS and WebRTC
           </h6>
 

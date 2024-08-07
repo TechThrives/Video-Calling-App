@@ -42,17 +42,7 @@ const App = () => {
               }
             />
             <Route
-              path="/meeting"
-              element={
-                <PrivateRoute>
-                  <SocketProvider>
-                    <Meeting />
-                  </SocketProvider>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/meeting/:roomId"
+              path="/meeting/:roomId?"
               element={
                 <PrivateRoute>
                   <SocketProvider>

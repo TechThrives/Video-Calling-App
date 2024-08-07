@@ -6,25 +6,25 @@ const ParticipantList = () => {
   return (
     <div className="right-container">
       <h3>Participants List</h3>
-      <div class="participant-list">
+      <div className="participant-list">
         {Object.keys(peerItems).map((peerId) => {
           const user = peerItems[peerId].user;
           const peerStream = peerItems[peerId].peerStream;
           return (
-            <div class="participant-card">
+            <div className="participant-card">
               <div className="participant-data">
-                <div class="participant-picture">
+                <div className="participant-picture">
                   <img
-                    src={`${process.env.REACT_APP_SERVER}/api/user/image/${peerItems[peerId].user._id}`}
+                    src={`data:image/png;base64,${user.profileImg}`}
                     alt="Avatar"
                   />
                 </div>
-                <div class="participant-infos">
-                  <div class="name">{user.name}</div>
-                  <div class="details">Participant</div>
+                <div className="participant-infos">
+                  <div className="name">{user.name}</div>
+                  <div className="details">Participant</div>
                 </div>
               </div>
-              <div class="participant-icons">
+              <div className="participant-icons">
                 {peerStream.getAudioTracks()[0].enabled ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +36,7 @@ const ParticipantList = () => {
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    class="feather feather-mic participant-icon"
+                    className="feather feather-mic participant-icon"
                   >
                     <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                     <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
@@ -54,7 +54,7 @@ const ParticipantList = () => {
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    class="feather feather-mic-off participant-icon"
+                    className="feather feather-mic-off participant-icon"
                   >
                     <line x1="1" y1="1" x2="23" y2="23"></line>
                     <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>
@@ -74,7 +74,7 @@ const ParticipantList = () => {
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    class="feather feather-camera participant-icon"
+                    className="feather feather-camera participant-icon"
                   >
                     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                     <circle cx="12" cy="13" r="4"></circle>
@@ -90,7 +90,7 @@ const ParticipantList = () => {
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    class="feather feather-camera-off participant-icon"
+                    className="feather feather-camera-off participant-icon"
                   >
                     <line x1="1" y1="1" x2="23" y2="23"></line>
                     <path d="M21 21H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h4a2 2 0 0 1 2 2v9.34m-7.72-2.06a4 4 0 1 1-5.56-5.56"></path>
