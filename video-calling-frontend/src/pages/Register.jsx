@@ -17,6 +17,7 @@ const Register = () => {
   };
 
   const handleRegister = async (e) => {
+    e.preventDefault();
     const url = "/api/auth/register";
     const options = {
       method: "POST",
