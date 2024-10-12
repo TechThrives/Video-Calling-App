@@ -43,7 +43,7 @@ npm install
 ```
 
 - #### Configure Environment Variables
-    In the root directory of your React App, create a file named `.env`.
+    In the root directory of your Server, create a file named `.env`.
     
     Open the `.env` file and add the following environment variables:
 
@@ -80,7 +80,7 @@ npm install
 ```
 
 - #### Configure Environment Variables
-    In the root directory of your React App, create a file named `.env`.
+    In the root directory of your PeerJs Server, create a file named `.env`.
     
     Open the `.env` file and add the following environment variables:
 
