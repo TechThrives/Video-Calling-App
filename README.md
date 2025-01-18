@@ -146,6 +146,8 @@ Open your browser and go to http://localhost:3000 to start using the app.
 
 **Join a Meeting**: Enter the meeting ID to join an ongoing video call.
 
+**Chat with Participants**: Send and receive messages with other participants in the ongoing chat conversation.
+
 ## Contributing
 We welcome contributions from the community. To contribute to this project, please follow these guidelines:
 
